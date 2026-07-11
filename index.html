@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WebStorming Dev Vault — Centrale de production</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<main class="wrap">
+<section class="hero">
+  <div class="kicker">WebStorming Dev Environment</div>
+  <h1>Centrale de production & développement</h1>
+  <p class="subtitle">Un cockpit personnel pour garder en sécurité tous les projets, modules, idées, dépôts, fichiers et prochaines actions : Journalia, CounterAttackShield, SW Immobilier, Traceware, Fluxcore, IA, SEO, PWA et outils clients.</p>
+  <div class="chips">
+    <span class="chip">Mémoire projet</span><span class="chip">GitHub-ready</span><span class="chip">PWA-ready</span><span class="chip">CounterAttackShield transversal</span>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="stat"><span>Projets visibles</span><b id="count">0</b></div>
+  <div class="stat"><span>Priorité critique</span><b id="critical">0</b></div>
+  <div class="stat"><span>Actifs / fonctionnels</span><b id="active">0</b></div>
+  <div class="stat"><span>Familles projet</span><b id="cats">0</b></div>
+</section>
+
+<div class="toolbar">
+  <input id="q" class="search" placeholder="Rechercher : Journalia, IA, immobilier, SEO, sécurité, WhatsApp...">
+  <select id="cat" class="select">
+    <option value="">Toutes catégories</option>
+    <option>Business client</option><option>Cybersécurité</option><option>Immobilier IA</option><option>Infrastructure</option><option>Intelligence / Analyse</option><option>Journalia Module</option><option>Lead & Communication</option><option>Média IA</option><option>PWA IA</option><option>SEO</option><option>WordPress IA</option>
+  </select>
+</div>
+
+<section id="cards" class="grid"></section>
+
+<p class="footer">WebStorming Project Vault V0.2 — conçu comme mémoire centrale avant migration progressive vers GitHub.</p>
+</main>
+<script src="assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+[
+  {
+    "id": "journalia",
+    "name": "Journalia",
+    "category": "Média IA",
+    "status": "Actif",
+    "priority": "Critique",
+    "summary": "Plateforme de génération de contenus d’actualité : texte, audio, vidéo, JT, publication et modules métiers.",
+    "stack": [
+      "WordPress",
+      "Python/FastAPI",
+      "IA",
+      "Vidéo",
+      "PWA"
+    ],
+    "repo": "À définir",
+    "next": [
+      "Centraliser les modules",
+      "Relier CounterAttackShield",
+      "Documenter les flux IA"
+    ]
+  },
+  {
+    "id": "counterattackshield",
+    "name": "CounterAttackShield",
+    "category": "Cybersécurité",
+    "status": "Actif",
+    "priority": "Critique",
+    "summary": "SOC / WAF / audit / risk engine transversal pour protéger Journalia et les autres plateformes WebStorming.",
+    "stack": [
+      "WordPress Plugin",
+      "PHP",
+      "JSONL",
+      "WAF"
+    ],
+    "repo": "À définir",
+    "next": [
+      "Vision 4.0",
+      "Health Monitor",
+      "Threat Center"
+    ]
+  },
+  {
+    "id": "cabinet-rissafi",
+    "name": "Cabinet Rissafi / Cabinet avocat-comptable",
+    "category": "Business client",
+    "status": "En cours",
+    "priority": "Haute",
+    "summary": "Environnement web premium avec accueil client, PWA, assistant, tunnel de contact et expérience cognitive.",
+    "stack": [
+      "WordPress",
+      "PWA",
+      "UI/UX",
+      "IA"
+    ],
+    "repo": "À définir",
+    "next": [
+      "Finaliser interface",
+      "Connecter leads",
+      "Préparer production"
+    ]
+  },
+  {
+    "id": "traceware",
+    "name": "Traceware",
+    "category": "Intelligence / Analyse",
+    "status": "Existant",
+    "priority": "Haute",
+    "summary": "Module d’analyse des déplacements anormaux : troupes, avions, bateaux, signaux thermiques et risques géopolitiques.",
+    "stack": [
+      "IA",
+      "Data",
+      "Cartographie",
+      "Analyse"
+    ],
+    "repo": "À définir",
+    "next": [
+      "Documenter sources",
+      "Créer fiche sécurité",
+      "Définir dashboard"
+    ]
+  },
+  {
+    "id": "meteo-catastrophes",
+    "name": "Météo & Catastrophes naturelles",
+    "category": "Journalia Module",
+    "status": "Existant",
+    "priority": "Haute",
+    "summary": "Plateforme météo, risques naturels et alertes pour alimenter Journalia et ses contenus d’information.",
+    "stack": [
+      "API météo",
+      "Cartographie",
+      "Journalia"
+    ],
+    "repo": "À définir",
+    "next": [
+      "Lister API",
+      "Connecter Journalia",
+      "Définir alertes"
+    ]
+  },
+  {
+    "id": "sports",
+    "name": "Module Sports Journalia",
+    "category": "Journalia Module",
+    "status": "Existant",
+    "priority": "Moyenne",
+    "summary": "Module autonome pour collecter, traiter et publier les informations sportives dans Journalia.",
+    "stack": [
+      "API Sports",
+      "Journalia",
+      "IA"
+    ],
+    "repo": "À définir",
+    "next": [
+      "Lister sports",
+      "Créer workflow publication"
+    ]
+  },
+  {
+    "id": "emploi-ia",
+    "name": "Emploi IA",
+    "category": "PWA IA",
+    "status": "Existant",
+    "priority": "Moyenne",
+    "summary": "PWA pour gérer CV, photos, candidatures, offres d’emploi et réponses assistées par IA.",
+    "stack": [
+      "PWA",
+      "IA",
+      "Documents"
+    ],
+    "repo": "À définir",
+    "next": [
+      "Importer fichiers",
+      "Définir parcours candidat",
+      "Sécuriser données"
+    ]
+  },
+  {
+    "id": "fluxcore",
+    "name": "Fluxcore",
+    "category": "Infrastructure",
+    "status": "Existant",
+    "priority": "Haute",
+    "summary": "Brique CDN/GitHub/flux pour déployer et distribuer des ressources statiques ou médias autour de Journalia.",
+    "stack": [
+      "GitHub",
+      "CDN",
+      "Automation"
+    ],
+    "repo": "À définir",
+    "next": [
+      "Décrire architecture",
+      "Lister CDN",
+      "Relier aux projets"
+    ]
+  },
+  {
+    "id": "live-chat-premium",
+    "name": "Live Chat Premium",
+    "category": "Lead & Communication",
+    "status": "Existant",
+    "priority": "Haute",
+    "summary": "Chat nouvelle génération reliant site web, WhatsApp et mini plateforme de gestion des leads.",
+    "stack": [
+      "WhatsApp",
+      "PWA",
+      "CRM",
+      "IA"
+    ],
+    "repo": "À définir",
+    "next": [
+      "Décrire les 3 pans",
+      "Définir messages types",
+      "Créer dashboard leads"
+    ]
+  },
+  {
+    "id": "sw-immobilier",
+    "name": "SW Immobilier Constellation",
+    "category": "Immobilier IA",
+    "status": "Conception avancée",
+    "priority": "Critique",
+    "summary": "Plateforme multi-agences autour de SW Immobilier Marrakech : biens, IA, demandes, matching, constellation d’agences.",
+    "stack": [
+      "WordPress/PWA",
+      "IA",
+      "Immobilier",
+      "CRM"
+    ],
+    "repo": "À définir",
+    "next": [
+      "Définir modèle multi-agences",
+      "Créer fiches biens",
+      "Concevoir moteur matching"
+    ]
+  },
+  {
+    "id": "seo-platform",
+    "name": "Plateforme SEO WebStorming",
+    "category": "SEO",
+    "status": "Existant",
+    "priority": "Moyenne",
+    "summary": "Plateforme d’optimisation SEO globale pour améliorer le référencement naturel de tous les projets WebStorming.",
+    "stack": [
+      "SEO",
+      "IA",
+      "Audit"
+    ],
+    "repo": "À définir",
+    "next": [
+      "Définir audits",
+      "Créer checklist",
+      "Connecter projets"
+    ]
+  },
+  {
+    "id": "visite-immo-360",
+    "name": "Visite Immo 360",
+    "category": "Immobilier IA",
+    "status": "Fonctionnel",
+    "priority": "Haute",
+    "summary": "Génération de pseudo-visites virtuelles 360 à partir de photos classiques et descriptifs de biens immobiliers.",
+    "stack": [
+      "IA image",
+      "Vidéo",
+      "Immobilier"
+    ],
+    "repo": "À définir",
+    "next": [
+      "Importer démo",
+      "Créer API",
+      "Relier SW Immobilier"
+    ]
+  },
+  {
+    "id": "translation-box",
+    "name": "Boîte de traduction Journalia",
+    "category": "Journalia Module",
+    "status": "Existant",
+    "priority": "Haute",
+    "summary": "Module de traduction, qualification, notation et valorisation des flux d’information Journalia.",
+    "stack": [
+      "IA",
+      "Traduction",
+      "NLP"
+    ],
+    "repo": "À définir",
+    "next": [
+      "Définir scoring",
+      "Relier flux RSS",
+      "Créer export"
+    ]
+  },
+  {
+    "id": "wp-image-optimizer-ai",
+    "name": "WP Image Optimizer AI",
+    "category": "WordPress IA",
+    "status": "Existant",
+    "priority": "Moyenne",
+    "summary": "Plugin/module d’optimisation d’images assistée par IA pour WordPress et les projets WebStorming.",
+    "stack": [
+      "WordPress",
+      "IA Image",
+      "SEO"
+    ],
+    "repo": "À définir",
+    "next": [
+      "Importer plugin",
+      "Lister features",
+      "Connecter SEO"
+    ]
+  },
+  {
+    "id": "immo-visual-slider",
+    "name": "Immo Visual Slider 360",
+    "category": "Immobilier IA",
+    "status": "Fonctionnel",
+    "priority": "Moyenne",
+    "summary": "Mini module de génération de visuel immersif pseudo-360 pour intégrer dans une fiche de bien immobilier.",
+    "stack": [
+      "IA image",
+      "Slider",
+      "Immobilier"
+    ],
+    "repo": "À définir",
+    "next": [
+      "Relier fiches biens",
+      "Préparer shortcode",
+      "Optimiser poids média"
+    ]
+  }
+]
