@@ -1,5 +1,31 @@
 [
   {
+    "id": "webstorming-os",
+    "name": "WebStorming OS",
+    "category": "Pilotage / Production",
+    "status": "Actif",
+    "priority": "Critique",
+    "summary": "Cockpit central de production, mémoire vivante et environnement de pilotage de tous les projets WebStorming.",
+    "stack": [
+      "GitHub Pages",
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "PWA-ready"
+    ],
+    "repo": "webstormingproject/webstorming-dev-vault",
+    "branch": "main",
+    "version": "0.4",
+    "health": "En ligne",
+    "next": [
+      "Relier progressivement les dépôts GitHub",
+      "Importer les archives projet",
+      "Préparer la PWA V0.5"
+    ],
+    "progress": 46,
+    "updated": "2026-07-11"
+  },
+  {
     "id": "journalia",
     "name": "Journalia",
     "category": "Média IA",
@@ -13,14 +39,17 @@
       "Vidéo",
       "PWA"
     ],
-    "repo": "À définir",
+    "repo": "",
     "next": [
       "Centraliser les modules",
       "Relier CounterAttackShield",
       "Documenter les flux IA"
     ],
     "progress": 72,
-    "updated": "2026-07-11"
+    "updated": "2026-07-11",
+    "branch": "main",
+    "version": "Non renseignée",
+    "health": "À vérifier"
   },
   {
     "id": "counterattackshield",
@@ -35,14 +64,17 @@
       "JSONL",
       "WAF"
     ],
-    "repo": "À définir",
+    "repo": "",
     "next": [
       "Vision 4.0",
       "Health Monitor",
       "Threat Center"
     ],
     "progress": 68,
-    "updated": "2026-07-11"
+    "updated": "2026-07-11",
+    "branch": "main",
+    "version": "Non renseignée",
+    "health": "À vérifier"
   },
   {
     "id": "cabinet-rissafi",
@@ -57,14 +89,17 @@
       "UI/UX",
       "IA"
     ],
-    "repo": "À définir",
+    "repo": "",
     "next": [
       "Finaliser interface",
       "Connecter leads",
       "Préparer production"
     ],
     "progress": 82,
-    "updated": "2026-07-11"
+    "updated": "2026-07-11",
+    "branch": "main",
+    "version": "Non renseignée",
+    "health": "À vérifier"
   },
   {
     "id": "traceware",
@@ -79,14 +114,17 @@
       "Cartographie",
       "Analyse"
     ],
-    "repo": "À définir",
+    "repo": "",
     "next": [
       "Documenter sources",
       "Créer fiche sécurité",
       "Définir dashboard"
     ],
     "progress": 55,
-    "updated": "2026-07-11"
+    "updated": "2026-07-11",
+    "branch": "main",
+    "version": "Non renseignée",
+    "health": "À vérifier"
   },
   {
     "id": "meteo-catastrophes",
@@ -100,14 +138,17 @@
       "Cartographie",
       "Journalia"
     ],
-    "repo": "À définir",
+    "repo": "",
     "next": [
       "Lister API",
       "Connecter Journalia",
       "Définir alertes"
     ],
     "progress": 58,
-    "updated": "2026-07-11"
+    "updated": "2026-07-11",
+    "branch": "main",
+    "version": "Non renseignée",
+    "health": "À vérifier"
   },
   {
     "id": "sports",
@@ -121,13 +162,16 @@
       "Journalia",
       "IA"
     ],
-    "repo": "À définir",
+    "repo": "",
     "next": [
       "Lister sports",
       "Créer workflow publication"
     ],
     "progress": 52,
-    "updated": "2026-07-11"
+    "updated": "2026-07-11",
+    "branch": "main",
+    "version": "Non renseignée",
+    "health": "À vérifier"
   },
   {
     "id": "emploi-ia",
@@ -141,14 +185,17 @@
       "IA",
       "Documents"
     ],
-    "repo": "À définir",
+    "repo": "",
     "next": [
       "Importer fichiers",
       "Définir parcours candidat",
       "Sécuriser données"
     ],
     "progress": 60,
-    "updated": "2026-07-11"
+    "updated": "2026-07-11",
+    "branch": "main",
+    "version": "Non renseignée",
+    "health": "À vérifier"
   },
   {
     "id": "fluxcore",
@@ -162,14 +209,17 @@
       "CDN",
       "Automation"
     ],
-    "repo": "À définir",
+    "repo": "",
     "next": [
       "Décrire architecture",
       "Lister CDN",
       "Relier aux projets"
     ],
     "progress": 64,
-    "updated": "2026-07-11"
+    "updated": "2026-07-11",
+    "branch": "main",
+    "version": "Non renseignée",
+    "health": "À vérifier"
   },
   {
     "id": "live-chat-premium",
@@ -184,14 +234,17 @@
       "CRM",
       "IA"
     ],
-    "repo": "À définir",
+    "repo": "",
     "next": [
       "Décrire les 3 pans",
       "Définir messages types",
       "Créer dashboard leads"
     ],
     "progress": 57,
-    "updated": "2026-07-11"
+    "updated": "2026-07-11",
+    "branch": "main",
+    "version": "Non renseignée",
+    "health": "À vérifier"
   },
   {
     "id": "sw-immobilier",
@@ -206,14 +259,17 @@
       "Immobilier",
       "CRM"
     ],
-    "repo": "À définir",
+    "repo": "",
     "next": [
       "Définir modèle multi-agences",
       "Créer fiches biens",
       "Concevoir moteur matching"
     ],
     "progress": 48,
-    "updated": "2026-07-11"
+    "updated": "2026-07-11",
+    "branch": "main",
+    "version": "Non renseignée",
+    "health": "À vérifier"
   },
   {
     "id": "seo-platform",
@@ -227,14 +283,17 @@
       "IA",
       "Audit"
     ],
-    "repo": "À définir",
+    "repo": "",
     "next": [
       "Définir audits",
       "Créer checklist",
       "Connecter projets"
     ],
     "progress": 50,
-    "updated": "2026-07-11"
+    "updated": "2026-07-11",
+    "branch": "main",
+    "version": "Non renseignée",
+    "health": "À vérifier"
   },
   {
     "id": "visite-immo-360",
@@ -248,14 +307,17 @@
       "Vidéo",
       "Immobilier"
     ],
-    "repo": "À définir",
+    "repo": "",
     "next": [
       "Importer démo",
       "Créer API",
       "Relier SW Immobilier"
     ],
     "progress": 76,
-    "updated": "2026-07-11"
+    "updated": "2026-07-11",
+    "branch": "main",
+    "version": "Non renseignée",
+    "health": "À vérifier"
   },
   {
     "id": "translation-box",
@@ -269,14 +331,17 @@
       "Traduction",
       "NLP"
     ],
-    "repo": "À définir",
+    "repo": "",
     "next": [
       "Définir scoring",
       "Relier flux RSS",
       "Créer export"
     ],
     "progress": 62,
-    "updated": "2026-07-11"
+    "updated": "2026-07-11",
+    "branch": "main",
+    "version": "Non renseignée",
+    "health": "À vérifier"
   },
   {
     "id": "wp-image-optimizer-ai",
@@ -290,14 +355,17 @@
       "IA Image",
       "SEO"
     ],
-    "repo": "À définir",
+    "repo": "",
     "next": [
       "Importer plugin",
       "Lister features",
       "Connecter SEO"
     ],
     "progress": 66,
-    "updated": "2026-07-11"
+    "updated": "2026-07-11",
+    "branch": "main",
+    "version": "Non renseignée",
+    "health": "À vérifier"
   },
   {
     "id": "immo-visual-slider",
@@ -311,13 +379,16 @@
       "Slider",
       "Immobilier"
     ],
-    "repo": "À définir",
+    "repo": "",
     "next": [
       "Relier fiches biens",
       "Préparer shortcode",
       "Optimiser poids média"
     ],
     "progress": 74,
-    "updated": "2026-07-11"
+    "updated": "2026-07-11",
+    "branch": "main",
+    "version": "Non renseignée",
+    "health": "À vérifier"
   }
 ]

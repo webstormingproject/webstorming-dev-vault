@@ -13,3 +13,45 @@ body:before{content:"";position:fixed;inset:0;background:linear-gradient(120deg,
 dialog{max-width:760px;width:calc(100% - 30px);background:#1b100c;color:white;border:1px solid var(--line);border-radius:24px;padding:26px;box-shadow:0 30px 100px #000}dialog::backdrop{background:rgba(0,0,0,.7);backdrop-filter:blur(5px)}.close{float:right;border:0;background:rgba(255,255,255,.09);color:white;border-radius:50%;width:36px;height:36px;font-size:24px;cursor:pointer}.dialog-next li{margin:8px 0}
 @media(max-width:1000px){.stats,.grid{grid-template-columns:1fr 1fr}.dashboard-grid,.ideas-layout{grid-template-columns:1fr}.roadmap-board{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr 1fr}.toolbar .search{grid-column:1/-1}}
 @media(max-width:650px){.wrap{padding:15px}.topbar,.hero{display:block}.clock{margin-top:15px;text-align:left}.stats,.grid{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr}.priority-item{grid-template-columns:1fr}.topbar h1{font-size:30px}.hero h2{font-size:26px}.hero-status{display:inline-block;margin-top:15px}}
+
+
+/* V0.4 */
+.clock small{display:block;margin-top:5px;color:var(--gold)}
+.hero-actions{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.ghost-link{color:var(--muted);text-decoration:none;font-size:13px}
+.compact{width:auto}
+.muted{color:var(--muted)}
+.button-row{display:flex;gap:8px;flex-wrap:wrap}
+.danger-btn{border:1px solid rgba(255,133,133,.35);background:rgba(255,133,133,.12);color:#ffd3d3;border-radius:12px;padding:10px 13px;cursor:pointer}
+.repo-status{line-height:1.55;background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:15px;padding:14px;min-height:105px}
+.github-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.repo-card{min-height:230px}
+.repo-card.unavailable{opacity:.72}
+.repo-card.error{border-color:rgba(255,133,133,.4)}
+.repo-metrics{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0}
+.repo-metrics span{background:rgba(255,255,255,.07);padding:8px 10px;border-radius:10px}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.health{font-size:11px;padding:6px 9px;border-radius:999px;background:rgba(255,255,255,.08);white-space:nowrap}
+.health-en-ligne{color:var(--green);background:rgba(118,247,162,.1)}
+.btn.disabled{opacity:.5;cursor:not-allowed;background:rgba(255,255,255,.08)}
+.ideas-layout{display:grid;grid-template-columns:.72fr 1.28fr;gap:16px}
+.idea-list{display:grid;gap:10px;max-height:560px;overflow:auto;padding-right:4px}
+.idea-item{background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:15px;padding:14px}
+.idea-item p{margin:8px 0}.idea-item small{color:var(--muted)}
+.build-current{display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:14px}
+.build-badge{background:rgba(118,247,162,.12);color:var(--green);border:1px solid rgba(118,247,162,.25);padding:10px 13px;border-radius:999px;font-weight:800}
+.build-timeline{display:grid;gap:10px}
+.build-item{display:grid;grid-template-columns:120px 1fr;gap:16px;padding:14px;border-radius:15px;background:rgba(255,255,255,.045);border:1px solid transparent}
+.build-item.current{border-color:rgba(118,247,162,.3);background:rgba(118,247,162,.06)}
+.build-item small,.build-item span{display:block;color:var(--muted);margin-top:4px}
+.fatal{max-width:1500px;margin:12px auto;background:#702f2f;color:white;padding:12px 18px;border-radius:12px}
+code{color:#c9f1ff}
+@media(max-width:1000px){
+  .github-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ideas-layout{grid-template-columns:1fr}
+}
+@media(max-width:700px){
+  .github-grid{grid-template-columns:1fr}
+  .hero-actions{align-items:flex-start}
+  .build-item{grid-template-columns:1fr}
+}

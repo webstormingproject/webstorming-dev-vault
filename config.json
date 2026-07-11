@@ -1,0 +1,14 @@
+{
+  "appName": "WebStorming OS",
+  "version": "0.4",
+  "build": "WS4V04",
+  "githubOwner": "webstormingproject",
+  "centralRepo": "webstorming-dev-vault",
+  "pagesUrl": "https://webstormingproject.github.io/webstorming-dev-vault/",
+  "releasedAt": "2026-07-11",
+  "features": {
+    "githubPublicApi": true,
+    "ideasLocalStorage": true,
+    "buildHistory": true
+  }
+}

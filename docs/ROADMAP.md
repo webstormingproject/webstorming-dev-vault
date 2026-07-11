@@ -1,18 +1,24 @@
-# Roadmap
+# Roadmap WebStorming OS
 
-## V0.2
-- Page d'accueil centrale
-- Catalogue projets
-- Fiches README
-- Zone incoming par projet
+## V0.4 — GitHub & builds
+- lecture de dépôts publics ;
+- historique de versions ;
+- état du dépôt central ;
+- catalogue enrichi.
 
-## V0.3
-- Ajout édition locale
-- Tags, statuts, priorités
-- Export GitHub
+## V0.5 — PWA & sauvegarde
+- application installable ;
+- mode hors ligne ;
+- import/export complet ;
+- sauvegarde des notes et idées.
 
-## V1.0
-- PWA installable
-- Connexion GitHub
-- Upload/tri de fichiers
-- Sauvegarde automatique
+## V0.6 — Mémoire projet
+- documents, captures, liens, décisions ;
+- journal par projet ;
+- dépendances entre projets.
+
+## V1.0 — Assistant WebStorming
+- recherche conversationnelle ;
+- synthèse quotidienne ;
+- priorités suggérées ;
+- mémoire unifiée.
