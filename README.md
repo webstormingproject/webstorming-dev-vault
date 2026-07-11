@@ -1,24 +1,19 @@
-# WebStorming Dev Vault
+# WebStorming OS V0.3
 
-Centrale de production et développement pour tous les projets WebStorming / Journalia.
+Cockpit statique GitHub Pages pour centraliser les projets WebStorming.
 
-## Objectif
+## Nouveautés V0.3
+- vue d'ensemble avec statistiques et priorités ;
+- catalogue filtrable ;
+- fiches projet en fenêtre modale ;
+- roadmap globale ;
+- Atelier des idées avec stockage local dans le navigateur ;
+- export JSON des idées ;
+- progression et prochaines actions par projet.
 
-Ne plus laisser les projets éparpillés.  
-Chaque projet possède une fiche, un dossier et une zone d'import.
+## Publication GitHub Pages
+Déployer depuis la branche `main`, dossier `/(root)`.
 
-## Utilisation
-
-Ouvrir `index.html` dans un navigateur.
-
-## Structure
-
-- `projects.json` : catalogue global
-- `projects/` : fiches projet
-- `incoming/` : zone où déposer les fichiers à trier
-- `assets/` : interface HTML/CSS/JS
-- `docs/` : roadmap, décisions, architecture
-
-## Prochaine étape
-
-Transformer cette centrale en vraie PWA puis créer un dépôt GitHub central.
+## Mise à jour
+Remplacer les fichiers du dépôt par ceux de cette archive puis valider un commit.
+Les idées sont conservées dans `localStorage` du navigateur : elles ne sont pas synchronisées entre appareils.

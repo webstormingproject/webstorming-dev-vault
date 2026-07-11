@@ -3,39 +3,109 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>WebStorming Dev Vault — Centrale de production</title>
+<meta name="theme-color" content="#140d0a">
+<title>WebStorming OS V0.3 — Cockpit de production</title>
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
 <main class="wrap">
-<section class="hero">
-  <div class="kicker">WebStorming Dev Environment</div>
-  <h1>Centrale de production & développement</h1>
-  <p class="subtitle">Un cockpit personnel pour garder en sécurité tous les projets, modules, idées, dépôts, fichiers et prochaines actions : Journalia, CounterAttackShield, SW Immobilier, Traceware, Fluxcore, IA, SEO, PWA et outils clients.</p>
-  <div class="chips">
-    <span class="chip">Mémoire projet</span><span class="chip">GitHub-ready</span><span class="chip">PWA-ready</span><span class="chip">CounterAttackShield transversal</span>
+<header class="topbar">
+  <div>
+    <div class="kicker">WebStorming OS · V0.3</div>
+    <h1>Cockpit de production & développement</h1>
+    <p class="subtitle">La mémoire vivante de tous les projets WebStorming : code, idées, priorités, prochaines actions et dépôts.</p>
+  </div>
+  <div class="clock"><span id="today"></span><b id="time"></b></div>
+</header>
+
+<nav class="tabs" aria-label="Navigation principale">
+  <button class="tab active" data-view="dashboard">Vue d’ensemble</button>
+  <button class="tab" data-view="projects">Projets</button>
+  <button class="tab" data-view="roadmap">Roadmap</button>
+  <button class="tab" data-view="ideas">Atelier des idées</button>
+</nav>
+
+<section id="dashboard" class="view active">
+  <section class="hero">
+    <div>
+      <div class="hero-label">Bonjour Bernard</div>
+      <h2>Ta centrale WebStorming est opérationnelle.</h2>
+      <p>Tout ce qui existe, fonctionne ou doit être poursuivi reste visible ici.</p>
+    </div>
+    <div class="hero-status"><span class="pulse"></span> GitHub Pages actif</div>
+  </section>
+
+  <section class="stats">
+    <div class="stat"><span>Projets suivis</span><b id="count">0</b><small>dans le cockpit</small></div>
+    <div class="stat"><span>Priorités critiques</span><b id="critical">0</b><small>à protéger</small></div>
+    <div class="stat"><span>Actifs / existants</span><b id="active">0</b><small>déjà opérationnels</small></div>
+    <div class="stat"><span>Avancement moyen</span><b id="avg">0%</b><small>estimation globale</small></div>
+  </section>
+
+  <section class="dashboard-grid">
+    <article class="panel wide">
+      <div class="panel-head"><div><span class="eyebrow">Priorités</span><h3>Projets à garder en tête</h3></div><button class="link-btn" data-goto="projects">Tout voir</button></div>
+      <div id="priorityList" class="priority-list"></div>
+    </article>
+    <article class="panel">
+      <span class="eyebrow">Mémoire rapide</span><h3>Nouvelle idée</h3>
+      <textarea id="quickIdea" placeholder="Dicte ou écris une idée avant qu'elle ne disparaisse..."></textarea>
+      <select id="quickProject"><option value="Général">Projet général</option></select>
+      <button id="saveQuickIdea" class="primary">Enregistrer l’idée</button>
+      <p id="ideaFeedback" class="feedback"></p>
+    </article>
+    <article class="panel">
+      <span class="eyebrow">Aujourd’hui</span><h3>Prochaine action recommandée</h3>
+      <div id="nextAction" class="next-action"></div>
+    </article>
+    <article class="panel wide">
+      <div class="panel-head"><div><span class="eyebrow">Activité</span><h3>Répartition par catégorie</h3></div></div>
+      <div id="categoryBars" class="bars"></div>
+    </article>
+  </section>
+</section>
+
+<section id="projects" class="view">
+  <div class="section-title"><div><span class="eyebrow">Catalogue</span><h2>Tous les projets</h2></div></div>
+  <div class="toolbar">
+    <input id="q" class="search" placeholder="Rechercher : Journalia, immobilier, IA, sécurité...">
+    <select id="cat" class="select"><option value="">Toutes catégories</option></select>
+    <select id="status" class="select"><option value="">Tous statuts</option></select>
+  </div>
+  <section id="cards" class="grid"></section>
+</section>
+
+<section id="roadmap" class="view">
+  <div class="section-title"><div><span class="eyebrow">Pilotage</span><h2>Roadmap globale</h2></div></div>
+  <div class="roadmap-board">
+    <section><h3>Maintenant</h3><div id="roadNow" class="road-col"></div></section>
+    <section><h3>Ensuite</h3><div id="roadNext" class="road-col"></div></section>
+    <section><h3>Plus tard</h3><div id="roadLater" class="road-col"></div></section>
   </div>
 </section>
 
-<section class="stats">
-  <div class="stat"><span>Projets visibles</span><b id="count">0</b></div>
-  <div class="stat"><span>Priorité critique</span><b id="critical">0</b></div>
-  <div class="stat"><span>Actifs / fonctionnels</span><b id="active">0</b></div>
-  <div class="stat"><span>Familles projet</span><b id="cats">0</b></div>
+<section id="ideas" class="view">
+  <div class="section-title"><div><span class="eyebrow">Mémoire vivante</span><h2>Atelier des idées</h2></div></div>
+  <div class="ideas-layout">
+    <article class="panel">
+      <label>Projet</label><select id="ideaProject"></select>
+      <label>Idée</label><textarea id="ideaText" placeholder="Décris l'idée librement..."></textarea>
+      <button id="addIdea" class="primary">Ajouter à la mémoire</button>
+    </article>
+    <article class="panel wide">
+      <div class="panel-head"><h3>Idées enregistrées</h3><button id="exportIdeas" class="link-btn">Exporter JSON</button></div>
+      <div id="ideasList" class="ideas-list"></div>
+    </article>
+  </div>
 </section>
 
-<div class="toolbar">
-  <input id="q" class="search" placeholder="Rechercher : Journalia, IA, immobilier, SEO, sécurité, WhatsApp...">
-  <select id="cat" class="select">
-    <option value="">Toutes catégories</option>
-    <option>Business client</option><option>Cybersécurité</option><option>Immobilier IA</option><option>Infrastructure</option><option>Intelligence / Analyse</option><option>Journalia Module</option><option>Lead & Communication</option><option>Média IA</option><option>PWA IA</option><option>SEO</option><option>WordPress IA</option>
-  </select>
-</div>
-
-<section id="cards" class="grid"></section>
-
-<p class="footer">WebStorming Project Vault V0.2 — conçu comme mémoire centrale avant migration progressive vers GitHub.</p>
+<footer>WebStorming OS V0.3 · Centrale de production · Données projets dans <code>projects.json</code></footer>
 </main>
+
+<dialog id="projectDialog">
+  <button class="close" aria-label="Fermer">×</button>
+  <div id="dialogContent"></div>
+</dialog>
 <script src="assets/app.js"></script>
 </body>
 </html>

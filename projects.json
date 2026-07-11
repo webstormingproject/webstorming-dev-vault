@@ -18,7 +18,9 @@
       "Centraliser les modules",
       "Relier CounterAttackShield",
       "Documenter les flux IA"
-    ]
+    ],
+    "progress": 72,
+    "updated": "2026-07-11"
   },
   {
     "id": "counterattackshield",
@@ -38,7 +40,9 @@
       "Vision 4.0",
       "Health Monitor",
       "Threat Center"
-    ]
+    ],
+    "progress": 68,
+    "updated": "2026-07-11"
   },
   {
     "id": "cabinet-rissafi",
@@ -58,7 +62,9 @@
       "Finaliser interface",
       "Connecter leads",
       "Préparer production"
-    ]
+    ],
+    "progress": 82,
+    "updated": "2026-07-11"
   },
   {
     "id": "traceware",
@@ -78,7 +84,9 @@
       "Documenter sources",
       "Créer fiche sécurité",
       "Définir dashboard"
-    ]
+    ],
+    "progress": 55,
+    "updated": "2026-07-11"
   },
   {
     "id": "meteo-catastrophes",
@@ -97,7 +105,9 @@
       "Lister API",
       "Connecter Journalia",
       "Définir alertes"
-    ]
+    ],
+    "progress": 58,
+    "updated": "2026-07-11"
   },
   {
     "id": "sports",
@@ -115,7 +125,9 @@
     "next": [
       "Lister sports",
       "Créer workflow publication"
-    ]
+    ],
+    "progress": 52,
+    "updated": "2026-07-11"
   },
   {
     "id": "emploi-ia",
@@ -134,7 +146,9 @@
       "Importer fichiers",
       "Définir parcours candidat",
       "Sécuriser données"
-    ]
+    ],
+    "progress": 60,
+    "updated": "2026-07-11"
   },
   {
     "id": "fluxcore",
@@ -153,7 +167,9 @@
       "Décrire architecture",
       "Lister CDN",
       "Relier aux projets"
-    ]
+    ],
+    "progress": 64,
+    "updated": "2026-07-11"
   },
   {
     "id": "live-chat-premium",
@@ -173,7 +189,9 @@
       "Décrire les 3 pans",
       "Définir messages types",
       "Créer dashboard leads"
-    ]
+    ],
+    "progress": 57,
+    "updated": "2026-07-11"
   },
   {
     "id": "sw-immobilier",
@@ -193,7 +211,9 @@
       "Définir modèle multi-agences",
       "Créer fiches biens",
       "Concevoir moteur matching"
-    ]
+    ],
+    "progress": 48,
+    "updated": "2026-07-11"
   },
   {
     "id": "seo-platform",
@@ -212,7 +232,9 @@
       "Définir audits",
       "Créer checklist",
       "Connecter projets"
-    ]
+    ],
+    "progress": 50,
+    "updated": "2026-07-11"
   },
   {
     "id": "visite-immo-360",
@@ -231,7 +253,9 @@
       "Importer démo",
       "Créer API",
       "Relier SW Immobilier"
-    ]
+    ],
+    "progress": 76,
+    "updated": "2026-07-11"
   },
   {
     "id": "translation-box",
@@ -250,7 +274,9 @@
       "Définir scoring",
       "Relier flux RSS",
       "Créer export"
-    ]
+    ],
+    "progress": 62,
+    "updated": "2026-07-11"
   },
   {
     "id": "wp-image-optimizer-ai",
@@ -269,7 +295,9 @@
       "Importer plugin",
       "Lister features",
       "Connecter SEO"
-    ]
+    ],
+    "progress": 66,
+    "updated": "2026-07-11"
   },
   {
     "id": "immo-visual-slider",
@@ -288,6 +316,8 @@
       "Relier fiches biens",
       "Préparer shortcode",
       "Optimiser poids média"
-    ]
+    ],
+    "progress": 74,
+    "updated": "2026-07-11"
   }
 ]
