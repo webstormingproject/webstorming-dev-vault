@@ -1,239 +1,227 @@
-let projects=[];
-let config={version:"0.4",build:"WS4V04",pagesUrl:"#",githubOwner:"webstormingproject",centralRepo:"webstorming-dev-vault"};
+let projects=[], dataSource="aucune", diagnostics=[];
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-const repoName=p=>String(p.repo||"").trim();
+const arr=v=>Array.isArray(v)?v:[];
+const norm=p=>({id:p?.id||String(Math.random()),name:p?.name||"Projet",category:p?.category||"Non classé",status:p?.status||"À vérifier",priority:p?.priority||"Normale",summary:p?.summary||"",stack:arr(p?.stack),repo:p?.repo||"",version:p?.version||"Non renseignée",health:p?.health||"À vérifier",next:arr(p?.next),progress:Number(p?.progress)||0,dependencies:arr(p?.dependencies),focus:Boolean(p?.focus)});
 
-async function init(){
+async function loadProjects(){
+  diagnostics=[];
   try{
-    const [pr,cr]=await Promise.all([fetch("projects.json"),fetch("config.json")]);
-    if(!pr.ok) throw new Error("projects.json introuvable");
-    projects=await pr.json();
-    if(cr.ok) config=await cr.json();
-  }catch(err){
-    document.body.insertAdjacentHTML("afterbegin",`<div class="fatal">Chargement partiel : ${esc(err.message)}</div>`);
+    const r=await fetch("projects.json",{cache:"no-store"});
+    if(!r.ok) throw new Error(`HTTP ${r.status}`);
+    const d=await r.json();
+    if(!Array.isArray(d)||!d.length) throw new Error("Catalogue vide");
+    projects=d.map(norm);dataSource="projects.json";diagnostics.push(["OK","Catalogue principal",`${projects.length} projets`]);
+  }catch(e){
+    projects=arr(window.WS_FALLBACK_PROJECTS).map(norm);dataSource="secours intégré";
+    diagnostics.push(["WARN","Catalogue principal",e.message],["OK","Catalogue de secours",`${projects.length} projets`]);
   }
-  applyConfig(); fillSelectors(); renderStats(); renderPriority(); renderCategories();
-  renderProjects(); renderRoadmap(); renderIdeas(); renderBuilds(); bindUI();
-  tick(); setInterval(tick,1000);
-  refreshGithub();
 }
-
-function applyConfig(){
-  $("#appVersion").textContent=`V${config.version}`;
-  $("#buildLabel").textContent=`Build ${config.build}`;
-  $("#currentVersion").textContent=`WebStorming OS V${config.version}`;
-  $("#currentBuild").textContent=config.build;
-  $("#pagesLink").href=config.pagesUrl||"#";
-}
-
-function tick(){
-  const d=new Date();
-  $("#today").textContent=d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
-  $("#time").textContent=d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"});
-}
-
+async function boot(){await loadProjects();fillSelectors();renderAll();bind();tick();setInterval(tick,1000);$("#app").classList.remove("hidden");$("#boot").remove();initVoice()}
+function tick(){const d=new Date();$("#today").textContent=d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"});$("#time").textContent=d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}
 function fillSelectors(){
-  const cats=[...new Set(projects.map(p=>p.category))].filter(Boolean).sort();
-  const sts=[...new Set(projects.map(p=>p.status))].filter(Boolean).sort();
-  cats.forEach(x=>$("#cat").insertAdjacentHTML("beforeend",`<option>${esc(x)}</option>`));
-  sts.forEach(x=>$("#status").insertAdjacentHTML("beforeend",`<option>${esc(x)}</option>`));
-  [$("#quickProject"),$("#ideaProject")].forEach(sel=>{
-    projects.forEach(p=>sel.insertAdjacentHTML("beforeend",`<option value="${esc(p.name)}">${esc(p.name)}</option>`));
-  });
+  [...new Set(projects.map(p=>p.category))].sort().forEach(v=>$("#cat").add(new Option(v,v)));
+  [...new Set(projects.map(p=>p.status))].sort().forEach(v=>$("#status").add(new Option(v,v)));
+  projects.forEach(p=>{$("#quickProject").add(new Option(p.name,p.name));$("#ideaProject").add(new Option(p.name,p.name))});
 }
-
-function renderStats(){
-  $("#count").textContent=projects.length;
-  $("#critical").textContent=projects.filter(p=>p.priority==="Critique").length;
-  $("#repoCount").textContent=projects.filter(p=>repoName(p)).length;
-  const avg=projects.length?Math.round(projects.reduce((a,p)=>a+(Number(p.progress)||0),0)/projects.length):0;
-  $("#avg").textContent=avg+"%";
-}
-
-function renderPriority(){
-  const weights={Critique:0,Haute:1,Moyenne:2,Normale:3};
-  const arr=[...projects].sort((a,b)=>(weights[a.priority]??9)-(weights[b.priority]??9)).slice(0,6);
-  $("#priorityList").innerHTML=arr.map(p=>`
-    <div class="priority-item">
-      <div><b>${esc(p.name)}</b><small>${esc(p.next?.[0]||"À définir")}</small></div>
-      <div class="progress"><i style="width:${Math.min(100,Math.max(0,p.progress||0))}%"></i></div>
-      <button class="link-btn" data-open-project="${esc(p.id)}">${Number(p.progress)||0}%</button>
-    </div>`).join("");
-  const p=arr[0];
-  $("#nextAction").innerHTML=p?`<b>${esc(p.name)}</b><br>${esc(p.next?.[0]||"Revoir la roadmap")}`:"Aucune action définie.";
-}
-
-function renderCategories(){
-  const m={}; projects.forEach(p=>m[p.category]=(m[p.category]||0)+1);
-  const vals=Object.values(m), max=vals.length?Math.max(...vals):1;
-  $("#categoryBars").innerHTML=Object.entries(m).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`
-    <div class="bar-row"><span>${esc(k)}</span><div class="bar"><i style="width:${v/max*100}%"></i></div><b>${v}</b></div>`).join("");
-}
-
-function projectCard(p){
-  const repo=repoName(p);
-  return `<article class="card">
-    <div class="card-head"><h3>${esc(p.name)}</h3><span class="health health-${slug(p.health)}">${esc(p.health||"À vérifier")}</span></div>
-    <div class="meta"><span class="badge">${esc(p.category)}</span><span class="badge">${esc(p.status)}</span><span class="badge">${esc(p.priority)}</span></div>
-    <p>${esc(p.summary)}</p>
-    <div class="meta">${(p.stack||[]).map(x=>`<span class="badge">${esc(x)}</span>`).join("")}</div>
-    <div class="card-progress"><div class="progress"><i style="width:${Number(p.progress)||0}%"></i></div><b>${Number(p.progress)||0}%</b></div>
-    <div class="actions">
-      <button class="btn" data-open-project="${esc(p.id)}">Fiche projet</button>
-      ${repo?`<a class="btn secondary" href="https://github.com/${esc(repo)}" target="_blank" rel="noopener">GitHub</a>`:`<span class="btn disabled">Dépôt à relier</span>`}
-    </div>
-  </article>`;
-}
-
-function renderProjects(){
-  const q=($("#q").value||"").toLowerCase(),cat=$("#cat").value,st=$("#status").value;
-  const list=projects.filter(p=>(!cat||p.category===cat)&&(!st||p.status===st)&&JSON.stringify(p).toLowerCase().includes(q));
-  $("#cards").innerHTML=list.map(projectCard).join("")||"<p>Aucun projet trouvé.</p>";
-}
-
-function openProject(id){
-  const p=projects.find(x=>x.id===id); if(!p)return;
-  const repo=repoName(p);
-  $("#dialogContent").innerHTML=`
-    <span class="eyebrow">${esc(p.category)}</span>
-    <h2>${esc(p.name)}</h2>
-    <p>${esc(p.summary)}</p>
-    <div class="meta">
-      <span class="badge">${esc(p.status)}</span><span class="badge">${esc(p.priority)}</span>
-      <span class="badge">${Number(p.progress)||0}%</span><span class="badge">Version ${esc(p.version||"Non renseignée")}</span>
-    </div>
-    <h3>Technologies</h3><div class="meta">${(p.stack||[]).map(x=>`<span class="badge">${esc(x)}</span>`).join("")}</div>
-    <h3>Prochaines actions</h3><ul>${(p.next||[]).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
-    <h3>Dépôt</h3>
-    ${repo?`<a class="btn" target="_blank" rel="noopener" href="https://github.com/${esc(repo)}">${esc(repo)}</a>`:"<p class='muted'>Dépôt GitHub à renseigner dans projects.json.</p>"}`;
-  $("#projectDialog").showModal();
-}
-
-function renderRoadmap(){
-  const sorted=[...projects].sort((a,b)=>(b.progress||0)-(a.progress||0));
-  const now=sorted.filter(p=>p.priority==="Critique"||p.status==="En cours").slice(0,7);
-  const next=sorted.filter(p=>p.priority==="Haute"&&!now.includes(p)).slice(0,7);
-  const later=sorted.filter(p=>!now.includes(p)&&!next.includes(p)).slice(0,9);
-  const html=arr=>arr.map(p=>`<article class="road-item"><b>${esc(p.name)}</b><span>${esc(p.next?.[0]||"À préciser")}</span></article>`).join("")||"<p class='muted'>Rien pour le moment.</p>";
-  $("#roadNow").innerHTML=html(now); $("#roadNext").innerHTML=html(next); $("#roadLater").innerHTML=html(later);
-}
-
+function renderAll(){$("#sourceBadge").textContent=`Données : ${dataSource}`;$("#loadMessage").textContent=`${projects.length} projets chargés.`;renderStats();renderPriority();renderCategories();renderProjects();renderWork();renderIdeas();renderMap();renderRoadmap();renderDiagnostics()}
+function renderStats(){$("#count").textContent=projects.length;$("#focusCount").textContent=projects.filter(p=>p.focus).length;$("#dependencyCount").textContent=projects.reduce((a,p)=>a+p.dependencies.length,0);$("#avg").textContent=Math.round(projects.reduce((a,p)=>a+p.progress,0)/Math.max(1,projects.length))+"%"}
+function renderPriority(){const w={Critique:0,Haute:1,Moyenne:2,Normale:3};const ps=[...projects].sort((a,b)=>(w[a.priority]??9)-(w[b.priority]??9)).slice(0,7);$("#priorityList").innerHTML=ps.map(p=>`<div class="priority-item"><div><b>${esc(p.name)}</b><small>${esc(p.next[0]||"À définir")}</small></div><div class="progress"><i style="width:${p.progress}%"></i></div><button class="link-btn" data-open="${esc(p.id)}">${p.progress}%</button></div>`).join("");const p=ps[0];$("#nextAction").innerHTML=p?`<b>${esc(p.name)}</b><br>${esc(p.next[0]||"Revoir la roadmap")}`:"Aucune action"}
+function renderCategories(){const m={};projects.forEach(p=>m[p.category]=(m[p.category]||0)+1);const max=Math.max(1,...Object.values(m));$("#categoryBars").innerHTML=Object.entries(m).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="bar-row"><span>${esc(k)}</span><div class="bar"><i style="width:${v/max*100}%"></i></div><b>${v}</b></div>`).join("")}
+function card(p){return `<article class="card"><div class="card-head"><h3>${esc(p.name)}</h3><button class="focus-toggle ${p.focus?"on":""}" data-focus="${esc(p.id)}">${p.focus?"Focus":"Ajouter au focus"}</button></div><div class="meta"><span class="badge">${esc(p.category)}</span><span class="badge">${esc(p.status)}</span><span class="badge">${esc(p.priority)}</span></div><p>${esc(p.summary)}</p><div class="card-progress"><div class="progress"><i style="width:${p.progress}%"></i></div><b>${p.progress}%</b></div><div class="actions"><button class="btn" data-open="${esc(p.id)}">Ouvrir</button>${p.repo?`<a class="btn secondary" target="_blank" rel="noopener" href="https://github.com/${esc(p.repo)}">GitHub</a>`:""}</div></article>`}
+function renderProjects(){const q=$("#q").value.toLowerCase(),c=$("#cat").value,s=$("#status").value;const list=projects.filter(p=>(!c||p.category===c)&&(!s||p.status===s)&&JSON.stringify(p).toLowerCase().includes(q));$("#cards").innerHTML=list.map(card).join("")||"<p>Aucun projet.</p>"}
+function renderWork(){const focus=projects.filter(p=>p.focus).sort((a,b)=>b.progress-a.progress);$("#workGrid").innerHTML=focus.map(p=>`<article class="work-card"><div><span class="eyebrow">${esc(p.category)}</span><h3>${esc(p.name)}</h3><p>${esc(p.next[0]||"Définir la prochaine action")}</p></div><div class="work-actions"><span>${p.progress}%</span><button class="btn" data-open="${esc(p.id)}">Travailler</button></div></article>`).join("")||"<article class='panel'><p>Aucun projet sélectionné. Ajoute-en depuis l’onglet Projets.</p></article>"}
+function openProject(id){const p=projects.find(x=>x.id===id);if(!p)return;const notes=projectNotes(id);$("#dialogContent").innerHTML=`<span class="eyebrow">${esc(p.category)}</span><h2>${esc(p.name)}</h2><p>${esc(p.summary)}</p><div class="meta"><span class="badge">${esc(p.status)}</span><span class="badge">${esc(p.priority)}</span><span class="badge">${p.progress}%</span><span class="badge">V${esc(p.version)}</span></div><h3>Prochaines actions</h3><ul>${p.next.map(x=>`<li>${esc(x)}</li>`).join("")||"<li>À définir</li>"}</ul><h3>Dépendances</h3><div class="meta">${p.dependencies.map(id=>`<span class="badge">${esc(projects.find(x=>x.id===id)?.name||id)}</span>`).join("")||"<span class='muted'>Aucune</span>"}</div><h3>Notes du projet</h3><div class="voice-field"><textarea id="projectNoteText" placeholder="Ajouter ou dicter une note…"></textarea><button class="field-mic" type="button" data-voice-target="projectNoteText" title="Dicter une note">🎙</button></div><button class="primary" data-save-note="${esc(id)}">Enregistrer la note</button><div class="idea-list">${notes.map(n=>`<article class="idea-item"><p>${esc(n.text)}</p><small>${new Date(n.createdAt).toLocaleString("fr-FR")}</small></article>`).join("")||"<p class='muted'>Aucune note.</p>"}</div>`;$("#projectDialog").showModal()}
+function projectNotes(id){try{return JSON.parse(localStorage.getItem(`wsNotes:${id}`)||"[]")}catch{return []}}
+function saveProjectNote(id,text){text=String(text||"").trim();if(!text)return;const a=projectNotes(id);a.unshift({text,createdAt:new Date().toISOString()});localStorage.setItem(`wsNotes:${id}`,JSON.stringify(a));openProject(id)}
 function ideas(){try{return JSON.parse(localStorage.getItem("wsIdeas")||"[]")}catch{return []}}
-function saveIdeas(v){localStorage.setItem("wsIdeas",JSON.stringify(v))}
-function addIdea(text,project,priority="Normale"){
-  const clean=String(text||"").trim(); if(!clean)return false;
-  const list=ideas(); list.unshift({id:crypto.randomUUID?.()||String(Date.now()),text:clean,project,priority,createdAt:new Date().toISOString()});
-  saveIdeas(list); renderIdeas(); return true;
-}
-function renderIdeas(){
-  const list=ideas();
-  $("#ideaList").innerHTML=list.map(i=>`<article class="idea-item">
-    <div><b>${esc(i.project)}</b><span class="badge">${esc(i.priority)}</span></div>
-    <p>${esc(i.text)}</p><small>${new Date(i.createdAt).toLocaleString("fr-FR")}</small>
-  </article>`).join("")||"<p class='muted'>Aucune idée enregistrée sur cet appareil.</p>";
-}
-
-function slug(v){return String(v||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-")}
-
-async function fetchRepo(fullName,force=false){
-  const cacheKey=`wsRepo:${fullName}`;
-  if(!force){
-    try{
-      const cached=JSON.parse(localStorage.getItem(cacheKey)||"null");
-      if(cached&&Date.now()-cached.savedAt<5*60*1000)return cached.data;
-    }catch{}
-  }
-  const r=await fetch(`https://api.github.com/repos/${encodeURIComponent(fullName).replace("%2F","/")}`,{headers:{"Accept":"application/vnd.github+json"}});
-  if(!r.ok)throw new Error(r.status===404?"Dépôt introuvable":`GitHub ${r.status}`);
-  const data=await r.json();
-  localStorage.setItem(cacheKey,JSON.stringify({savedAt:Date.now(),data}));
-  return data;
-}
-
-function repoCard(p,state){
-  const repo=repoName(p);
-  if(!repo)return `<article class="card repo-card unavailable"><h3>${esc(p.name)}</h3><p>Dépôt non relié.</p><small>Ajoute <code>owner/repository</code> dans projects.json.</small></article>`;
-  if(state.loading)return `<article class="card repo-card"><h3>${esc(p.name)}</h3><p>Chargement de ${esc(repo)}…</p></article>`;
-  if(state.error)return `<article class="card repo-card error"><h3>${esc(p.name)}</h3><p>${esc(state.error)}</p><a target="_blank" rel="noopener" href="https://github.com/${esc(repo)}">Ouvrir GitHub</a></article>`;
-  const d=state.data;
-  return `<article class="card repo-card">
-    <div class="card-head"><h3>${esc(p.name)}</h3><span class="health health-en-ligne">GitHub</span></div>
-    <p><b>${esc(d.full_name)}</b></p>
-    <div class="repo-metrics">
-      <span>★ ${d.stargazers_count}</span><span>⑂ ${d.forks_count}</span><span>Issues ${d.open_issues_count}</span>
-    </div>
-    <small>Dernière mise à jour : ${new Date(d.updated_at).toLocaleString("fr-FR")}</small>
-    <div class="actions"><a class="btn" href="${esc(d.html_url)}" target="_blank" rel="noopener">Ouvrir le dépôt</a></div>
-  </article>`;
-}
-
-async function refreshGithub(force=false){
-  const linked=projects.filter(p=>repoName(p));
-  const states=new Map(linked.map(p=>[p.id,{loading:true}]));
-  renderGithub(states);
-  $("#centralRepoStatus").textContent="Connexion à GitHub…";
-  const results=await Promise.all(linked.map(async p=>{
-    try{return [p.id,{data:await fetchRepo(repoName(p),force)}]}
-    catch(e){return [p.id,{error:e.message}]}
-  }));
-  results.forEach(([id,s])=>states.set(id,s));
-  renderGithub(states);
-  const central=projects.find(p=>repoName(p)===`${config.githubOwner}/${config.centralRepo}`)||projects.find(p=>p.id==="webstorming-os");
-  const st=central?states.get(central.id):null;
-  if(st?.data){
-    $("#centralRepoStatus").innerHTML=`<b>${esc(st.data.full_name)}</b><br><span>${esc(st.data.default_branch)} · ${st.data.open_issues_count} issue(s) ouverte(s)</span><br><small>Mis à jour ${new Date(st.data.updated_at).toLocaleString("fr-FR")}</small>`;
-  }else{
-    $("#centralRepoStatus").textContent=st?.error||"Dépôt central non configuré.";
-  }
-  $("#githubRefreshState").textContent=`Dernière lecture : ${new Date().toLocaleTimeString("fr-FR")}`;
-}
-
-function renderGithub(states){
-  $("#githubGrid").innerHTML=projects.map(p=>repoCard(p,states.get(p.id)||{})).join("");
-}
-
-function renderBuilds(){
-  const builds=[
-    {version:"0.4",build:"WS4V04",date:"11/07/2026",title:"GitHub & historique des builds",current:true},
-    {version:"0.3",build:"WS3V03",date:"11/07/2026",title:"Cockpit, roadmap et Atelier des idées"},
-    {version:"0.2",build:"WS2V02",date:"11/07/2026",title:"Catalogue central des projets"},
-    {version:"0.1",build:"WS1V01",date:"11/07/2026",title:"Première mémoire WebStorming"}
-  ];
-  $("#buildTimeline").innerHTML=builds.map(b=>`<article class="build-item ${b.current?"current":""}">
-    <div><b>V${b.version}</b><small>${esc(b.date)}</small></div>
-    <div><strong>${esc(b.title)}</strong><span>${esc(b.build)}</span></div>
-  </article>`).join("");
-}
-
-function bindUI(){
-  $$(".tab").forEach(btn=>btn.addEventListener("click",()=>showView(btn.dataset.view)));
-  $$("[data-goto]").forEach(btn=>btn.addEventListener("click",()=>showView(btn.dataset.goto)));
+function addIdea(t,p,priority="Normale"){t=String(t||"").trim();if(!t)return false;const a=ideas();a.unshift({text:t,project:p,priority,createdAt:new Date().toISOString()});localStorage.setItem("wsIdeas",JSON.stringify(a));renderIdeas();return true}
+function renderIdeas(){$("#ideaList").innerHTML=ideas().map(i=>`<article class="idea-item"><div><b>${esc(i.project)}</b> <span class="badge">${esc(i.priority)}</span></div><p>${esc(i.text)}</p><small>${new Date(i.createdAt).toLocaleString("fr-FR")}</small></article>`).join("")||"<p class='muted'>Aucune idée.</p>"}
+function renderMap(){$("#dependencyMap").innerHTML=projects.filter(p=>p.dependencies.length).map(p=>`<div class="dep-row"><button class="dep-main" data-open="${esc(p.id)}">${esc(p.name)}</button><span>→</span><div>${p.dependencies.map(id=>`<button class="dep-node" data-open="${esc(id)}">${esc(projects.find(x=>x.id===id)?.name||id)}</button>`).join("")}</div></div>`).join("")||"<p>Aucune dépendance définie.</p>"}
+function renderRoadmap(){const now=projects.filter(p=>p.priority==="Critique"||p.focus).slice(0,8),next=projects.filter(p=>p.priority==="Haute"&&!now.includes(p)).slice(0,8),later=projects.filter(p=>!now.includes(p)&&!next.includes(p)).slice(0,10);const h=a=>a.map(p=>`<article class="road-item"><b>${esc(p.name)}</b><span>${esc(p.next[0]||"À préciser")}</span></article>`).join("")||"<p class='muted'>Rien.</p>";$("#roadNow").innerHTML=h(now);$("#roadNext").innerHTML=h(next);$("#roadLater").innerHTML=h(later)}
+function renderDiagnostics(){diagnostics.push(["INFO","Source active",dataSource],["INFO","Projets chargés",String(projects.length)],["INFO","Notes projets","localStorage"],["INFO","Mode travail",`${projects.filter(p=>p.focus).length} projets`]);$("#diagList").innerHTML=diagnostics.map(d=>`<div class="diag-row"><span class="diag-${d[0].toLowerCase()}">${esc(d[0])}</span><b>${esc(d[1])}</b><small>${esc(d[2])}</small></div>`).join("")}
+function showView(id){$$(".view").forEach(v=>v.classList.toggle("active",v.id===id));$$(".tab").forEach(t=>t.classList.toggle("active",t.dataset.view===id));window.scrollTo({top:0,behavior:"smooth"})}
+function bind(){
+  $$(".tab").forEach(b=>b.onclick=()=>showView(b.dataset.view));$$("[data-view-jump]").forEach(b=>b.onclick=()=>showView(b.dataset.viewJump));
   ["q","cat","status"].forEach(id=>$("#"+id).addEventListener(id==="q"?"input":"change",renderProjects));
-  $("#saveQuickIdea").addEventListener("click",()=>{
-    const ok=addIdea($("#quickIdea").value,$("#quickProject").value);
-    $("#ideaFeedback").textContent=ok?"Idée enregistrée sur cet appareil.":"Écris d’abord une idée.";
-    if(ok)$("#quickIdea").value="";
-  });
-  $("#saveIdea").addEventListener("click",()=>{
-    if(addIdea($("#ideaText").value,$("#ideaProject").value,$("#ideaPriority").value))$("#ideaText").value="";
-  });
-  $("#exportIdeas").addEventListener("click",()=>{
-    const blob=new Blob([JSON.stringify(ideas(),null,2)],{type:"application/json"});
-    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`webstorming-ideas-${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(a.href);
-  });
-  $("#clearIdeas").addEventListener("click",()=>{if(confirm("Supprimer toutes les idées locales ?")){saveIdeas([]);renderIdeas()}});
-  $("#refreshGithub").addEventListener("click",()=>refreshGithub(true));
-  $("#refreshGithubPage").addEventListener("click",()=>refreshGithub(true));
-  $("#projectDialog .dialog-close").addEventListener("click",()=>$("#projectDialog").close());
+  document.addEventListener("click",e=>{const o=e.target.closest("[data-open]");if(o)openProject(o.dataset.open);const f=e.target.closest("[data-focus]");if(f){const p=projects.find(x=>x.id===f.dataset.focus);p.focus=!p.focus;renderAll()}const s=e.target.closest("[data-save-note]");if(s)saveProjectNote(s.dataset.saveNote,$("#projectNoteText").value)});
+  $(".dialog-close").onclick=()=>$("#projectDialog").close();
+  $("#saveQuickIdea").onclick=()=>{const ok=addIdea($("#quickIdea").value,$("#quickProject").value);$("#ideaFeedback").textContent=ok?"Idée enregistrée.":"Écris une idée.";if(ok)$("#quickIdea").value=""};
+  $("#saveIdea").onclick=()=>{if(addIdea($("#ideaText").value,$("#ideaProject").value,$("#ideaPriority").value))$("#ideaText").value=""};
+  $("#exportIdeas").onclick=()=>{const b=new Blob([JSON.stringify(ideas(),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="webstorming-ideas.json";a.click()};
+  $("#clearIdeas").onclick=()=>{if(confirm("Vider toutes les idées ?")){localStorage.removeItem("wsIdeas");renderIdeas()}};
+  $("#reloadData").onclick=()=>location.reload();
+}
+
+/* === WebStorming OS V1.1 Voice === */
+let voiceRecognition=null;
+let voiceFinalText="";
+let voiceListening=false;
+let voiceRequestedTarget="auto";
+
+function voiceApi(){
+  return window.SpeechRecognition || window.webkitSpeechRecognition || null;
+}
+function initVoice(){
+  const API=voiceApi();
+  if(!API){
+    setVoiceState("Vocal indisponible","Ce navigateur ne propose pas la reconnaissance vocale. Le reste du cockpit continue normalement.","error");
+    $("#voiceGlobal").disabled=true;
+    $$(".field-mic").forEach(b=>b.disabled=true);
+    return;
+  }
+  voiceRecognition=new API();
+  voiceRecognition.lang="fr-FR";
+  voiceRecognition.continuous=false;
+  voiceRecognition.interimResults=true;
+  voiceRecognition.maxAlternatives=1;
+
+  voiceRecognition.onstart=()=>{
+    voiceListening=true;
+    voiceFinalText="";
+    $("#voiceGlobal").classList.add("listening");
+    $("#voiceGlobal").setAttribute("aria-pressed","true");
+    $("#voiceButtonLabel").textContent="Écoute en cours…";
+    $("#voiceConfirm").disabled=true;
+    $("#voiceCancel").disabled=false;
+    setVoiceState("Je t’écoute","Parle naturellement. L’audio n’est pas enregistré par WebStorming OS.","listening");
+  };
+  voiceRecognition.onresult=e=>{
+    let interim="";
+    for(let i=e.resultIndex;i<e.results.length;i++){
+      const t=e.results[i][0].transcript;
+      if(e.results[i].isFinal) voiceFinalText+=t+" ";
+      else interim+=t;
+    }
+    const all=(voiceFinalText+interim).trim();
+    $("#voiceTranscript").textContent=all||"Écoute…";
+    $("#voiceConfirm").disabled=!all;
+  };
+  voiceRecognition.onerror=e=>{
+    const messages={
+      "not-allowed":"Accès au micro refusé.",
+      "service-not-allowed":"Service vocal refusé par le navigateur.",
+      "no-speech":"Aucune parole détectée.",
+      "audio-capture":"Aucun microphone disponible.",
+      "network":"Le service vocal n’a pas répondu."
+    };
+    setVoiceState("Erreur vocale",messages[e.error]||`Erreur : ${e.error}`,"error");
+  };
+  voiceRecognition.onend=()=>{
+    voiceListening=false;
+    $("#voiceGlobal").classList.remove("listening");
+    $("#voiceGlobal").setAttribute("aria-pressed","false");
+    $("#voiceButtonLabel").textContent="Parler à WebStorming";
+    const text=$("#voiceTranscript").textContent.trim();
+    if(text && text!=="Écoute…" && !text.startsWith("La transcription")){
+      setVoiceState("Transcription prête","Vérifie le texte, puis confirme.","ready");
+      $("#voiceConfirm").disabled=false;
+    }
+  };
+
+  $("#voiceGlobal").addEventListener("click",()=>voiceListening?stopVoice():startVoice("auto"));
+  $("#voiceConfirm").addEventListener("click",confirmVoiceText);
+  $("#voiceCancel").addEventListener("click",cancelVoice);
   document.addEventListener("click",e=>{
-    const id=e.target.closest("[data-open-project]")?.dataset.openProject;
-    if(id)openProject(id);
+    const b=e.target.closest("[data-voice-target]");
+    if(b) startVoice(b.dataset.voiceTarget);
   });
 }
-function showView(id){
-  $$(".view").forEach(v=>v.classList.toggle("active",v.id===id));
-  $$(".tab").forEach(t=>t.classList.toggle("active",t.dataset.view===id));
-  window.scrollTo({top:0,behavior:"smooth"});
+function setVoiceState(title,text,mode=""){
+  $("#voiceState").textContent=title;
+  $("#voiceTranscript").textContent=text;
+  $(".voice-console").dataset.state=mode;
 }
-init();
+function startVoice(target="auto"){
+  if(!voiceRecognition) return;
+  voiceRequestedTarget=target;
+  $("#voiceTarget").value=[...$("#voiceTarget").options].some(o=>o.value===target)?target:"auto";
+  try{ voiceRecognition.start(); }
+  catch(e){ if(e.name!=="InvalidStateError") setVoiceState("Impossible de démarrer",e.message,"error"); }
+}
+function stopVoice(){
+  if(voiceRecognition&&voiceListening) voiceRecognition.stop();
+}
+function cancelVoice(){
+  stopVoice();
+  voiceFinalText="";
+  $("#voiceConfirm").disabled=true;
+  $("#voiceCancel").disabled=true;
+  setVoiceState("Micro en attente","La transcription apparaîtra ici.","");
+}
+function currentVoiceText(){
+  const t=$("#voiceTranscript").textContent.trim();
+  if(!t || t==="Écoute…" || t.startsWith("La transcription")) return "";
+  return t;
+}
+function confirmVoiceText(){
+  const text=currentVoiceText();
+  if(!text) return;
+  const target=$("#voiceTarget").value==="auto"?voiceRequestedTarget:$("#voiceTarget").value;
+  if(target==="auto"){
+    if(executeVoiceCommand(text)){ cancelVoice(); return; }
+    writeVoiceTo("quickIdea",text);
+  }else{
+    writeVoiceTo(target,text);
+  }
+  cancelVoice();
+}
+function writeVoiceTo(target,text){
+  const el=document.getElementById(target);
+  if(!el){
+    setVoiceState("Destination indisponible","Ouvre d’abord la fiche du projet concerné.","error");
+    return;
+  }
+  el.value=(el.value?el.value.trim()+" ":"")+text.trim();
+  el.dispatchEvent(new Event("input",{bubbles:true}));
+  el.focus();
+  if(target==="q"){ showView("projects"); renderProjects(); }
+}
+function normalizeVoice(s){
+  return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[’']/g," ").replace(/\s+/g," ").trim();
+}
+function findProjectByVoice(text){
+  const n=normalizeVoice(text);
+  return projects.find(p=>{
+    const name=normalizeVoice(p.name);
+    return n.includes(name) || name.split(" ").filter(x=>x.length>3).some(x=>n.includes(x));
+  });
+}
+function executeVoiceCommand(text){
+  const n=normalizeVoice(text);
+  const p=findProjectByVoice(text);
+
+  if(/^(ouvre|ouvrir|affiche|montre)\b/.test(n) && p){
+    openProject(p.id);
+    return true;
+  }
+  if(/(ajoute|mettre|mets).*(focus|mode travail)/.test(n) && p){
+    p.focus=true; renderAll(); showView("work");
+    return true;
+  }
+  if(/(retire|enleve|supprime).*(focus|mode travail)/.test(n) && p){
+    p.focus=false; renderAll(); showView("work");
+    return true;
+  }
+  if(/^(cherche|recherche|trouve)\b/.test(n)){
+    const query=text.replace(/^(cherche|recherche|trouve)\s*/i,"").trim();
+    $("#q").value=query; showView("projects"); renderProjects();
+    return true;
+  }
+  if(/(commence|demarre|ouvre).*(journee|mode travail)/.test(n)){
+    showView("work"); return true;
+  }
+  if(/(nouvelle idee|ajoute une idee|note une idee)/.test(n)){
+    let cleaned=text.replace(/.*?(nouvelle idée|ajoute une idée|note une idée)\s*(pour|sur)?\s*/i,"").trim();
+    const project=p?.name||"Général";
+    if(cleaned) addIdea(cleaned,project,"Normale");
+    showView("ideas");
+    return true;
+  }
+  if(/(montre|affiche).*(priorites|roadmap)/.test(n)){
+    showView("roadmap"); return true;
+  }
+  return false;
+}
+
+boot();

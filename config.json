@@ -1,14 +1,15 @@
 {
   "appName": "WebStorming OS",
-  "version": "0.4",
-  "build": "WS4V04",
+  "version": "1.1 Voice",
+  "build": "WS11V01",
   "githubOwner": "webstormingproject",
   "centralRepo": "webstorming-dev-vault",
   "pagesUrl": "https://webstormingproject.github.io/webstorming-dev-vault/",
   "releasedAt": "2026-07-11",
-  "features": {
-    "githubPublicApi": true,
-    "ideasLocalStorage": true,
-    "buildHistory": true
+  "mode": "resilient-static",
+  "voice": {
+    "enabled": true,
+    "language": "fr-FR",
+    "audioStored": false
   }
 }

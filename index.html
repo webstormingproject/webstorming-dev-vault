@@ -2,162 +2,128 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#140d0a">
-<meta name="description" content="WebStorming OS — cockpit central de production et de développement.">
-<title>WebStorming OS V0.4 — Cockpit central</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#160e0b">
+<title>WebStorming OS V1.1 Voice</title>
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
-<main class="wrap">
+<div id="boot" class="boot">Initialisation de WebStorming OS V1.0…</div>
+<main id="app" class="wrap hidden">
 <header class="topbar">
   <div>
-    <div class="kicker">WebStorming OS · <span id="appVersion">V0.4</span></div>
-    <h1>Cockpit central de production</h1>
-    <p class="subtitle">Projets, idées, priorités, dépôts GitHub, builds et prochaines actions dans une seule mémoire.</p>
+    <div class="kicker">WEBSTORMING OS · V1.1 VOICE</div>
+    <h1>Ton système d’exploitation de production</h1>
+    <p class="subtitle">Projets, mémoire, GitHub, dépendances et mode travail dans un seul cockpit.</p>
   </div>
-  <div class="clock">
-    <span id="today"></span><b id="time"></b>
-    <small id="buildLabel">Build WS4V04</small>
-  </div>
+  <div class="clock"><span id="today"></span><b id="time"></b><small>Build WS11V01</small></div>
 </header>
 
-<nav class="tabs" aria-label="Navigation principale">
-  <button class="tab active" data-view="dashboard">Vue d’ensemble</button>
+<nav class="tabs">
+  <button class="tab active" data-view="dashboard">Accueil</button>
+  <button class="tab" data-view="work">Mode travail</button>
   <button class="tab" data-view="projects">Projets</button>
-  <button class="tab" data-view="github">GitHub</button>
+  <button class="tab" data-view="ideas">Idées</button>
+  <button class="tab" data-view="map">Dépendances</button>
   <button class="tab" data-view="roadmap">Roadmap</button>
-  <button class="tab" data-view="ideas">Atelier des idées</button>
-  <button class="tab" data-view="builds">Versions</button>
+  <button class="tab" data-view="diagnostics">Diagnostic</button>
 </nav>
+
+<section class="voice-console" aria-label="Assistant vocal WebStorming">
+  <div class="voice-main">
+    <button id="voiceGlobal" class="voice-button" type="button" aria-pressed="false">
+      <span class="mic-icon">🎙</span>
+      <span id="voiceButtonLabel">Parler à WebStorming</span>
+    </button>
+    <div class="voice-state">
+      <strong id="voiceState">Micro en attente</strong>
+      <span id="voiceTranscript">La transcription apparaîtra ici.</span>
+    </div>
+  </div>
+  <div class="voice-actions">
+    <select id="voiceTarget" aria-label="Destination de la dictée">
+      <option value="auto">Détection automatique</option>
+      <option value="quickIdea">Nouvelle idée</option>
+      <option value="ideaText">Atelier des idées</option>
+      <option value="q">Recherche globale</option>
+      <option value="projectNoteText">Note du projet ouvert</option>
+    </select>
+    <button id="voiceConfirm" class="primary compact" type="button" disabled>Utiliser le texte</button>
+    <button id="voiceCancel" class="link-btn" type="button" disabled>Annuler</button>
+  </div>
+  <p id="voiceHelp" class="voice-help">
+    Exemples : « ouvre Journalia », « ajoute CounterAttackShield au focus », « nouvelle idée pour SW Immobilier… »
+  </p>
+</section>
+
 
 <section id="dashboard" class="view active">
   <section class="hero">
-    <div>
-      <div class="hero-label">Bonjour Bernard</div>
-      <h2>Ta centrale WebStorming est opérationnelle.</h2>
-      <p>Tout ce qui existe, fonctionne ou doit être poursuivi reste visible et classé ici.</p>
-    </div>
+    <div><div class="hero-label">Bonjour Bernard</div><h2>Ta centrale de production est prête.</h2><p id="loadMessage"></p></div>
     <div class="hero-actions">
-      <div class="hero-status"><span class="pulse"></span> GitHub Pages actif</div>
-      <a class="ghost-link" id="pagesLink" href="#" target="_blank" rel="noopener">Ouvrir le site public</a>
+      <div class="hero-status"><span class="pulse"></span><span id="sourceBadge"></span></div>
+      <button class="primary compact" data-view-jump="work">Commencer ma journée</button>
     </div>
   </section>
-
   <section class="stats">
-    <div class="stat"><span>Projets suivis</span><b id="count">0</b><small>dans le cockpit</small></div>
-    <div class="stat"><span>Priorités critiques</span><b id="critical">0</b><small>à protéger</small></div>
-    <div class="stat"><span>Dépôts reliés</span><b id="repoCount">0</b><small>GitHub publics</small></div>
-    <div class="stat"><span>Avancement moyen</span><b id="avg">0%</b><small>estimation globale</small></div>
+    <div class="stat"><span>Projets</span><b id="count">0</b><small>suivis</small></div>
+    <div class="stat"><span>Focus du jour</span><b id="focusCount">0</b><small>sélectionnés</small></div>
+    <div class="stat"><span>Dépendances</span><b id="dependencyCount">0</b><small>relations</small></div>
+    <div class="stat"><span>Avancement moyen</span><b id="avg">0%</b><small>global</small></div>
   </section>
-
   <section class="dashboard-grid">
-    <article class="panel wide">
-      <div class="panel-head">
-        <div><span class="eyebrow">Priorités</span><h3>Projets à garder en tête</h3></div>
-        <button class="link-btn" data-goto="projects">Tout voir</button>
-      </div>
-      <div id="priorityList" class="priority-list"></div>
-    </article>
-
-    <article class="panel">
-      <span class="eyebrow">Mémoire rapide</span><h3>Nouvelle idée</h3>
-      <textarea id="quickIdea" placeholder="Dicte ou écris une idée avant qu’elle ne disparaisse..."></textarea>
-      <select id="quickProject"><option value="Général">Projet général</option></select>
-      <button id="saveQuickIdea" class="primary">Enregistrer l’idée</button>
-      <p id="ideaFeedback" class="feedback"></p>
-    </article>
-
-    <article class="panel">
-      <span class="eyebrow">Aujourd’hui</span><h3>Prochaine action recommandée</h3>
-      <div id="nextAction" class="next-action"></div>
-    </article>
-
-    <article class="panel">
-      <div class="panel-head">
-        <div><span class="eyebrow">GitHub</span><h3>Dépôt central</h3></div>
-        <button id="refreshGithub" class="link-btn">Actualiser</button>
-      </div>
-      <div id="centralRepoStatus" class="repo-status">Connexion en cours…</div>
-      <small id="githubRefreshState" class="muted"></small>
-    </article>
-
-    <article class="panel wide">
-      <span class="eyebrow">Activité</span><h3>Répartition par catégorie</h3>
-      <div id="categoryBars" class="bars"></div>
-    </article>
+    <article class="panel wide"><div class="panel-head"><div><span class="eyebrow">Priorités</span><h3>À garder en tête</h3></div></div><div id="priorityList" class="priority-list"></div></article>
+    <article class="panel"><span class="eyebrow">Mémoire rapide</span><h3>Nouvelle idée</h3><div class="voice-field"><textarea id="quickIdea" placeholder="Écris ou dicte avant que l’idée ne disparaisse…"></textarea><button class="field-mic" type="button" data-voice-target="quickIdea" title="Dicter cette idée">🎙</button></div><select id="quickProject"><option value="Général">Général</option></select><button id="saveQuickIdea" class="primary">Enregistrer</button><p id="ideaFeedback" class="feedback"></p></article>
+    <article class="panel"><span class="eyebrow">Prochaine action</span><h3>Suggestion du cockpit</h3><div id="nextAction" class="next-action"></div></article>
+    <article class="panel wide"><span class="eyebrow">Cartographie</span><h3>Répartition des projets</h3><div id="categoryBars" class="bars"></div></article>
   </section>
+</section>
+
+<section id="work" class="view">
+  <div class="section-title"><div><span class="eyebrow">Focus</span><h2>Mode travail</h2><p class="muted">Seulement les projets à traiter aujourd’hui.</p></div></div>
+  <div id="workGrid" class="work-grid"></div>
 </section>
 
 <section id="projects" class="view">
   <div class="section-title"><div><span class="eyebrow">Catalogue</span><h2>Tous les projets</h2></div></div>
   <div class="toolbar">
-    <input id="q" class="search" placeholder="Rechercher : Journalia, immobilier, IA, sécurité…">
+    <div class="voice-search"><input id="q" class="search" placeholder="Recherche globale…"><button class="field-mic" type="button" data-voice-target="q" title="Recherche vocale">🎙</button></div>
     <select id="cat" class="select"><option value="">Toutes catégories</option></select>
     <select id="status" class="select"><option value="">Tous statuts</option></select>
   </div>
   <section id="cards" class="grid"></section>
 </section>
 
-<section id="github" class="view">
-  <div class="section-title">
-    <div><span class="eyebrow">Synchronisation publique</span><h2>État des dépôts GitHub</h2></div>
-    <button id="refreshGithubPage" class="primary compact">Actualiser GitHub</button>
-  </div>
-  <p class="muted">Les informations sont lues depuis l’API publique GitHub. Aucun mot de passe ni jeton n’est enregistré.</p>
-  <section id="githubGrid" class="grid github-grid"></section>
+<section id="ideas" class="view">
+  <div class="section-title"><div><span class="eyebrow">Mémoire vivante</span><h2>Atelier des idées</h2></div></div>
+  <section class="ideas-layout">
+    <article class="panel"><label>Idée</label><div class="voice-field"><textarea id="ideaText" placeholder="Écris ou dicte une idée…"></textarea><button class="field-mic" type="button" data-voice-target="ideaText" title="Dicter une idée">🎙</button></div><label>Projet</label><select id="ideaProject"><option value="Général">Général</option></select><label>Priorité</label><select id="ideaPriority"><option>Normale</option><option>Haute</option><option>Critique</option></select><button id="saveIdea" class="primary">Ajouter</button></article>
+    <article class="panel"><div class="panel-head"><div><span class="eyebrow">Archives</span><h3>Idées enregistrées</h3></div><div class="button-row"><button id="exportIdeas" class="link-btn">Exporter</button><button id="clearIdeas" class="danger-btn">Vider</button></div></div><div id="ideaList" class="idea-list"></div></article>
+  </section>
+</section>
+
+<section id="map" class="view">
+  <div class="section-title"><div><span class="eyebrow">Architecture</span><h2>Dépendances entre projets</h2></div></div>
+  <section class="panel"><div id="dependencyMap" class="dependency-map"></div></section>
 </section>
 
 <section id="roadmap" class="view">
   <div class="section-title"><div><span class="eyebrow">Pilotage</span><h2>Roadmap globale</h2></div></div>
-  <div class="roadmap-board">
-    <section><h3>Maintenant</h3><div id="roadNow" class="road-col"></div></section>
-    <section><h3>Ensuite</h3><div id="roadNext" class="road-col"></div></section>
-    <section><h3>Plus tard</h3><div id="roadLater" class="road-col"></div></section>
-  </div>
+  <div class="roadmap-board"><section><h3>Maintenant</h3><div id="roadNow" class="road-col"></div></section><section><h3>Ensuite</h3><div id="roadNext" class="road-col"></div></section><section><h3>Plus tard</h3><div id="roadLater" class="road-col"></div></section></div>
 </section>
 
-<section id="ideas" class="view">
-  <div class="section-title"><div><span class="eyebrow">Mémoire vivante</span><h2>Atelier des idées</h2></div></div>
-  <section class="ideas-layout">
-    <article class="panel">
-      <label for="ideaText">Idée</label>
-      <textarea id="ideaText" placeholder="Ex. Ajouter un résumé quotidien des projets prioritaires…"></textarea>
-      <label for="ideaProject">Projet</label>
-      <select id="ideaProject"><option value="Général">Général</option></select>
-      <label for="ideaPriority">Priorité</label>
-      <select id="ideaPriority"><option>Normale</option><option>Haute</option><option>Critique</option></select>
-      <button id="saveIdea" class="primary">Ajouter à la mémoire</button>
-    </article>
-    <article class="panel">
-      <div class="panel-head">
-        <div><span class="eyebrow">Archives locales</span><h3>Idées enregistrées</h3></div>
-        <div class="button-row">
-          <button id="exportIdeas" class="link-btn">Exporter JSON</button>
-          <button id="clearIdeas" class="danger-btn">Vider</button>
-        </div>
-      </div>
-      <div id="ideaList" class="idea-list"></div>
-    </article>
-  </section>
-</section>
-
-<section id="builds" class="view">
-  <div class="section-title"><div><span class="eyebrow">Traçabilité</span><h2>Versions & builds</h2></div></div>
-  <section class="panel">
-    <div class="build-current">
-      <div><span class="eyebrow">Version en ligne</span><h3 id="currentVersion">WebStorming OS V0.4</h3></div>
-      <span id="currentBuild" class="build-badge">WS4V04</span>
-    </div>
-    <div id="buildTimeline" class="build-timeline"></div>
-  </section>
+<section id="diagnostics" class="view">
+  <div class="section-title"><div><span class="eyebrow">Résilience</span><h2>Diagnostic système</h2></div></div>
+  <article class="panel"><div id="diagList" class="diag-list"></div><button id="reloadData" class="primary">Recharger</button></article>
 </section>
 
 <dialog id="projectDialog">
-  <button class="dialog-close" aria-label="Fermer">×</button>
+  <button class="dialog-close">×</button>
   <div id="dialogContent"></div>
 </dialog>
+
 </main>
+<script src="assets/projects-fallback.js"></script>
 <script src="assets/app.js"></script>
 </body>
 </html>

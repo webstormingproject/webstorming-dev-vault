@@ -55,3 +55,75 @@ code{color:#c9f1ff}
   .hero-actions{align-items:flex-start}
   .build-item{grid-template-columns:1fr}
 }
+
+.hidden{display:none!important}.boot{min-height:100vh;display:grid;place-items:center;background:#160e0b;color:#fff;font:700 20px system-ui}
+.diag-list{display:grid;gap:10px;margin-bottom:18px}.diag-row{display:grid;grid-template-columns:80px 1fr 1fr;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.04)}
+.diag-row span{font-weight:800}.diag-ok{color:#76f7a2}.diag-warn{color:#ffd77a}.diag-error{color:#ff8b8b}.diag-info{color:#b6d8ff}
+.fatal{max-width:700px;margin:10vh auto;padding:30px;background:#4b2020;color:#fff;border-radius:20px}
+
+.hero-actions{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.compact{width:auto}
+.work-grid{display:grid;gap:14px}
+.work-card{display:flex;justify-content:space-between;gap:20px;align-items:center;background:rgba(255,255,255,.055);border:1px solid var(--line);border-radius:18px;padding:18px}
+.work-card h3{margin:4px 0 6px}.work-card p{margin:0;color:var(--muted)}
+.work-actions{display:flex;align-items:center;gap:12px}.work-actions span{font-size:22px;font-weight:800;color:var(--green)}
+.focus-toggle{border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--muted);border-radius:999px;padding:7px 10px;cursor:pointer}
+.focus-toggle.on{color:var(--green);border-color:rgba(118,247,162,.35);background:rgba(118,247,162,.08)}
+.dependency-map{display:grid;gap:12px}.dep-row{display:grid;grid-template-columns:220px 30px 1fr;align-items:center;gap:10px;padding:12px;border-radius:14px;background:rgba(255,255,255,.045)}
+.dep-main,.dep-node{border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--text);padding:9px 11px;border-radius:10px;cursor:pointer}
+.dep-node{margin:4px}
+@media(max-width:760px){.dep-row{grid-template-columns:1fr}.work-card{align-items:flex-start;flex-direction:column}.hero-actions{align-items:flex-start}}
+
+/* === V1.1 Voice === */
+.voice-console{
+  margin:0 0 18px;
+  padding:14px 16px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:linear-gradient(135deg,rgba(91,51,37,.72),rgba(18,14,12,.88));
+  box-shadow:0 18px 45px rgba(0,0,0,.2);
+}
+.voice-main{display:flex;align-items:center;gap:14px}
+.voice-button{
+  display:flex;align-items:center;gap:9px;
+  border:1px solid rgba(255,255,255,.16);
+  background:rgba(255,255,255,.08);
+  color:var(--text);border-radius:999px;
+  padding:12px 16px;font-weight:800;cursor:pointer;
+}
+.voice-button.listening{
+  border-color:rgba(118,247,162,.6);
+  box-shadow:0 0 0 6px rgba(118,247,162,.08),0 0 24px rgba(118,247,162,.24);
+}
+.mic-icon{font-size:20px}
+.voice-state{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.voice-state strong{font-size:14px}
+.voice-state span{color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.voice-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.voice-actions select{
+  min-width:220px;background:#251713;color:var(--text);
+  border:1px solid var(--line);border-radius:11px;padding:10px
+}
+.voice-help{margin:10px 0 0;color:var(--muted);font-size:12px}
+.voice-console[data-state="listening"]{border-color:rgba(118,247,162,.38)}
+.voice-console[data-state="error"]{border-color:rgba(255,139,139,.4)}
+.voice-field{position:relative}
+.voice-field textarea{padding-right:48px}
+.field-mic{
+  position:absolute;right:9px;top:9px;
+  width:34px;height:34px;border-radius:50%;
+  border:1px solid var(--line);background:rgba(255,255,255,.08);
+  color:var(--text);cursor:pointer
+}
+.voice-search{position:relative;min-width:min(100%,420px)}
+.voice-search .search{width:100%;padding-right:48px}
+.voice-search .field-mic{top:50%;transform:translateY(-50%)}
+.field-mic:hover,.voice-button:hover{background:rgba(255,255,255,.14)}
+.field-mic:disabled,.voice-button:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:760px){
+  .voice-main{align-items:flex-start}
+  .voice-button{flex:0 0 auto}
+  .voice-state span{white-space:normal}
+  .voice-actions{align-items:stretch}
+  .voice-actions select{width:100%}
+}

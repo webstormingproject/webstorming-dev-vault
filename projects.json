@@ -23,7 +23,15 @@
       "Préparer la PWA V0.5"
     ],
     "progress": 46,
-    "updated": "2026-07-11"
+    "updated": "2026-07-11",
+    "dependencies": [
+      "counterattackshield"
+    ],
+    "links": [],
+    "documents": [],
+    "notes": [],
+    "lastActivity": "2026-07-11",
+    "focus": true
   },
   {
     "id": "journalia",
@@ -49,7 +57,21 @@
     "updated": "2026-07-11",
     "branch": "main",
     "version": "Non renseignée",
-    "health": "À vérifier"
+    "health": "À vérifier",
+    "dependencies": [
+      "traceware",
+      "meteo-catastrophes",
+      "sports-journalia",
+      "fluxcore",
+      "counterattackshield",
+      "translation-engine",
+      "wp-image-optimizer-ai"
+    ],
+    "links": [],
+    "documents": [],
+    "notes": [],
+    "lastActivity": "2026-07-11",
+    "focus": true
   },
   {
     "id": "counterattackshield",
@@ -74,7 +96,13 @@
     "updated": "2026-07-11",
     "branch": "main",
     "version": "Non renseignée",
-    "health": "À vérifier"
+    "health": "À vérifier",
+    "dependencies": [],
+    "links": [],
+    "documents": [],
+    "notes": [],
+    "lastActivity": "2026-07-11",
+    "focus": true
   },
   {
     "id": "cabinet-rissafi",
@@ -99,7 +127,13 @@
     "updated": "2026-07-11",
     "branch": "main",
     "version": "Non renseignée",
-    "health": "À vérifier"
+    "health": "À vérifier",
+    "dependencies": [],
+    "links": [],
+    "documents": [],
+    "notes": [],
+    "lastActivity": "2026-07-11",
+    "focus": true
   },
   {
     "id": "traceware",
@@ -124,7 +158,13 @@
     "updated": "2026-07-11",
     "branch": "main",
     "version": "Non renseignée",
-    "health": "À vérifier"
+    "health": "À vérifier",
+    "dependencies": [],
+    "links": [],
+    "documents": [],
+    "notes": [],
+    "lastActivity": "2026-07-11",
+    "focus": true
   },
   {
     "id": "meteo-catastrophes",
@@ -148,7 +188,13 @@
     "updated": "2026-07-11",
     "branch": "main",
     "version": "Non renseignée",
-    "health": "À vérifier"
+    "health": "À vérifier",
+    "dependencies": [],
+    "links": [],
+    "documents": [],
+    "notes": [],
+    "lastActivity": "2026-07-11",
+    "focus": true
   },
   {
     "id": "sports",
@@ -171,7 +217,13 @@
     "updated": "2026-07-11",
     "branch": "main",
     "version": "Non renseignée",
-    "health": "À vérifier"
+    "health": "À vérifier",
+    "dependencies": [],
+    "links": [],
+    "documents": [],
+    "notes": [],
+    "lastActivity": "2026-07-11",
+    "focus": false
   },
   {
     "id": "emploi-ia",
@@ -195,7 +247,15 @@
     "updated": "2026-07-11",
     "branch": "main",
     "version": "Non renseignée",
-    "health": "À vérifier"
+    "health": "À vérifier",
+    "dependencies": [
+      "counterattackshield"
+    ],
+    "links": [],
+    "documents": [],
+    "notes": [],
+    "lastActivity": "2026-07-11",
+    "focus": false
   },
   {
     "id": "fluxcore",
@@ -219,7 +279,13 @@
     "updated": "2026-07-11",
     "branch": "main",
     "version": "Non renseignée",
-    "health": "À vérifier"
+    "health": "À vérifier",
+    "dependencies": [],
+    "links": [],
+    "documents": [],
+    "notes": [],
+    "lastActivity": "2026-07-11",
+    "focus": true
   },
   {
     "id": "live-chat-premium",
@@ -244,7 +310,16 @@
     "updated": "2026-07-11",
     "branch": "main",
     "version": "Non renseignée",
-    "health": "À vérifier"
+    "health": "À vérifier",
+    "dependencies": [
+      "fluxcore",
+      "counterattackshield"
+    ],
+    "links": [],
+    "documents": [],
+    "notes": [],
+    "lastActivity": "2026-07-11",
+    "focus": true
   },
   {
     "id": "sw-immobilier",
@@ -269,7 +344,13 @@
     "updated": "2026-07-11",
     "branch": "main",
     "version": "Non renseignée",
-    "health": "À vérifier"
+    "health": "À vérifier",
+    "dependencies": [],
+    "links": [],
+    "documents": [],
+    "notes": [],
+    "lastActivity": "2026-07-11",
+    "focus": true
   },
   {
     "id": "seo-platform",
@@ -293,7 +374,13 @@
     "updated": "2026-07-11",
     "branch": "main",
     "version": "Non renseignée",
-    "health": "À vérifier"
+    "health": "À vérifier",
+    "dependencies": [],
+    "links": [],
+    "documents": [],
+    "notes": [],
+    "lastActivity": "2026-07-11",
+    "focus": false
   },
   {
     "id": "visite-immo-360",
@@ -317,7 +404,13 @@
     "updated": "2026-07-11",
     "branch": "main",
     "version": "Non renseignée",
-    "health": "À vérifier"
+    "health": "À vérifier",
+    "dependencies": [],
+    "links": [],
+    "documents": [],
+    "notes": [],
+    "lastActivity": "2026-07-11",
+    "focus": true
   },
   {
     "id": "translation-box",
@@ -341,7 +434,13 @@
     "updated": "2026-07-11",
     "branch": "main",
     "version": "Non renseignée",
-    "health": "À vérifier"
+    "health": "À vérifier",
+    "dependencies": [],
+    "links": [],
+    "documents": [],
+    "notes": [],
+    "lastActivity": "2026-07-11",
+    "focus": true
   },
   {
     "id": "wp-image-optimizer-ai",
@@ -365,7 +464,13 @@
     "updated": "2026-07-11",
     "branch": "main",
     "version": "Non renseignée",
-    "health": "À vérifier"
+    "health": "À vérifier",
+    "dependencies": [],
+    "links": [],
+    "documents": [],
+    "notes": [],
+    "lastActivity": "2026-07-11",
+    "focus": false
   },
   {
     "id": "immo-visual-slider",
@@ -389,6 +494,12 @@
     "updated": "2026-07-11",
     "branch": "main",
     "version": "Non renseignée",
-    "health": "À vérifier"
+    "health": "À vérifier",
+    "dependencies": [],
+    "links": [],
+    "documents": [],
+    "notes": [],
+    "lastActivity": "2026-07-11",
+    "focus": false
   }
 ]

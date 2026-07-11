@@ -1,39 +1,45 @@
-# WebStorming OS V0.4
+# WebStorming OS V1.1 Voice
 
-Cockpit central GitHub Pages pour piloter l’écosystème WebStorming.
+Version vocale du cockpit WebStorming.
 
-## Nouveautés V0.4
+## Fonctions vocales
 
-- page GitHub avec lecture des dépôts publics ;
-- état du dépôt central et date de dernière mise à jour ;
-- cache local de cinq minutes pour limiter les appels API ;
-- historique des versions et builds ;
-- version et build visibles dans le cockpit ;
-- projet WebStorming OS ajouté au catalogue ;
-- fiches projet enrichies avec version, santé et dépôt ;
-- fonctionnement dégradé propre si GitHub est indisponible ;
-- aucun secret, mot de passe ou jeton stocké.
+- bouton global **Parler à WebStorming** ;
+- dictée dans la nouvelle idée ;
+- dictée dans l’Atelier des idées ;
+- recherche vocale ;
+- dictée d’une note dans une fiche projet ;
+- aperçu de la transcription avant utilisation ;
+- annulation avant insertion ;
+- commandes vocales simples.
 
-## Publication
+## Exemples de commandes
+
+- « Ouvre Journalia »
+- « Ajoute CounterAttackShield au focus »
+- « Retire Traceware du mode travail »
+- « Recherche immobilier »
+- « Commence ma journée »
+- « Montre la roadmap »
+- « Nouvelle idée pour SW Immobilier : matching automatique des demandes »
+
+## Confidentialité
+
+WebStorming OS ne sauvegarde pas le fichier audio.  
+Seul le texte confirmé est inséré dans le cockpit.
+
+La reconnaissance dépend du moteur vocal proposé par le navigateur. Si elle n’est pas disponible, le reste de l’application continue normalement.
+
+## Publication GitHub Pages
 
 1. Décompresser l’archive.
-2. Remplacer le contenu du dépôt `webstorming-dev-vault`.
-3. Valider un commit sur `main`.
+2. Remplacer tous les fichiers du dépôt `webstorming-dev-vault`.
+3. Valider avec **Commit changes** sur `main`.
 4. Attendre le déploiement GitHub Pages.
-5. Rafraîchir la page avec `Ctrl + F5`.
+5. Recharger avec `Ctrl + F5`.
+6. Autoriser le microphone lors de la première utilisation.
 
-## Relier un dépôt à un projet
+## Build
 
-Dans `projects.json`, renseigner :
-
-```json
-"repo": "proprietaire/nom-du-depot"
-```
-
-Exemple :
-
-```json
-"repo": "webstormingproject/webstorming-dev-vault"
-```
-
-Les dépôts privés ne sont pas lus par cette version statique.
+- Version : 1.1 Voice
+- Build : WS11V01
