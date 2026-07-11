@@ -53,11 +53,14 @@ function bind(){
   $("#reloadData").onclick=()=>location.reload();
 }
 
-/* === WebStorming OS V1.1 Voice === */
+/* === WebStorming OS V1.1.1 Voice Fix === */
 let voiceRecognition=null;
 let voiceFinalText="";
+let voiceInterimText="";
 let voiceListening=false;
 let voiceRequestedTarget="auto";
+let voiceStopTimer=null;
+let voiceHadError=false;
 
 function voiceApi(){
   return window.SpeechRecognition || window.webkitSpeechRecognition || null;
@@ -65,11 +68,16 @@ function voiceApi(){
 function initVoice(){
   const API=voiceApi();
   if(!API){
-    setVoiceState("Vocal indisponible","Ce navigateur ne propose pas la reconnaissance vocale. Le reste du cockpit continue normalement.","error");
+    setVoiceState(
+      "Vocal indisponible",
+      "Utilise Chrome ou Edge récent. Le reste du cockpit continue normalement.",
+      "error"
+    );
     $("#voiceGlobal").disabled=true;
     $$(".field-mic").forEach(b=>b.disabled=true);
     return;
   }
+
   voiceRecognition=new API();
   voiceRecognition.lang="fr-FR";
   voiceRecognition.continuous=false;
@@ -78,54 +86,107 @@ function initVoice(){
 
   voiceRecognition.onstart=()=>{
     voiceListening=true;
+    voiceHadError=false;
     voiceFinalText="";
+    voiceInterimText="";
+    clearTimeout(voiceStopTimer);
+
     $("#voiceGlobal").classList.add("listening");
     $("#voiceGlobal").setAttribute("aria-pressed","true");
-    $("#voiceButtonLabel").textContent="Écoute en cours…";
+    $("#voiceButtonLabel").textContent="Arrêter l’écoute";
     $("#voiceConfirm").disabled=true;
     $("#voiceCancel").disabled=false;
-    setVoiceState("Je t’écoute","Parle naturellement. L’audio n’est pas enregistré par WebStorming OS.","listening");
+
+    setVoiceState(
+      "Je t’écoute",
+      "Parle maintenant. L’écoute s’arrête automatiquement après quelques secondes.",
+      "listening"
+    );
+
+    voiceStopTimer=setTimeout(()=>{
+      if(voiceListening) voiceRecognition.stop();
+    },15000);
   };
+
+  voiceRecognition.onspeechstart=()=>{
+    setVoiceState("Voix détectée","Continue à parler…","listening");
+  };
+
   voiceRecognition.onresult=e=>{
-    let interim="";
+    voiceInterimText="";
     for(let i=e.resultIndex;i<e.results.length;i++){
-      const t=e.results[i][0].transcript;
-      if(e.results[i].isFinal) voiceFinalText+=t+" ";
-      else interim+=t;
+      const transcript=e.results[i][0].transcript || "";
+      if(e.results[i].isFinal) voiceFinalText+=transcript+" ";
+      else voiceInterimText+=transcript;
     }
-    const all=(voiceFinalText+interim).trim();
-    $("#voiceTranscript").textContent=all||"Écoute…";
-    $("#voiceConfirm").disabled=!all;
-  };
-  voiceRecognition.onerror=e=>{
-    const messages={
-      "not-allowed":"Accès au micro refusé.",
-      "service-not-allowed":"Service vocal refusé par le navigateur.",
-      "no-speech":"Aucune parole détectée.",
-      "audio-capture":"Aucun microphone disponible.",
-      "network":"Le service vocal n’a pas répondu."
-    };
-    setVoiceState("Erreur vocale",messages[e.error]||`Erreur : ${e.error}`,"error");
-  };
-  voiceRecognition.onend=()=>{
-    voiceListening=false;
-    $("#voiceGlobal").classList.remove("listening");
-    $("#voiceGlobal").setAttribute("aria-pressed","false");
-    $("#voiceButtonLabel").textContent="Parler à WebStorming";
-    const text=$("#voiceTranscript").textContent.trim();
-    if(text && text!=="Écoute…" && !text.startsWith("La transcription")){
-      setVoiceState("Transcription prête","Vérifie le texte, puis confirme.","ready");
+
+    const all=(voiceFinalText+voiceInterimText).trim();
+    if(all){
+      $("#voiceTranscript").textContent=all;
       $("#voiceConfirm").disabled=false;
     }
   };
 
-  $("#voiceGlobal").addEventListener("click",()=>voiceListening?stopVoice():startVoice("auto"));
+  voiceRecognition.onerror=e=>{
+    voiceHadError=true;
+    clearTimeout(voiceStopTimer);
+
+    const messages={
+      "not-allowed":"Accès au microphone refusé. Clique sur l’icône cadenas de l’adresse et autorise le micro.",
+      "service-not-allowed":"Le service vocal est bloqué par le navigateur.",
+      "no-speech":"Aucune parole détectée. Clique sur le micro puis parle immédiatement.",
+      "audio-capture":"Aucun microphone n’est disponible.",
+      "network":"Le service de reconnaissance vocale n’a pas répondu. Essaie Chrome ou Edge.",
+      "aborted":"Écoute annulée."
+    };
+
+    setVoiceState("Le vocal n’a pas abouti",messages[e.error]||`Erreur vocale : ${e.error}`,"error");
+    $("#voiceConfirm").disabled=true;
+  };
+
+  voiceRecognition.onend=()=>{
+    clearTimeout(voiceStopTimer);
+    voiceListening=false;
+
+    $("#voiceGlobal").classList.remove("listening");
+    $("#voiceGlobal").setAttribute("aria-pressed","false");
+    $("#voiceButtonLabel").textContent="Parler à WebStorming";
+
+    const actual=(voiceFinalText+voiceInterimText).trim();
+
+    if(voiceHadError) return;
+
+    if(actual){
+      $("#voiceTranscript").textContent=actual;
+      setVoiceTitleOnly("Transcription prête","ready");
+      $("#voiceConfirm").disabled=false;
+      $("#voiceCancel").disabled=false;
+    }else{
+      setVoiceState(
+        "Aucune parole détectée",
+        "Clique de nouveau puis parle immédiatement, assez près du microphone.",
+        "error"
+      );
+      $("#voiceConfirm").disabled=true;
+      $("#voiceCancel").disabled=false;
+    }
+  };
+
+  $("#voiceGlobal").addEventListener("click",()=>{
+    if(voiceListening) stopVoice();
+    else startVoice("auto");
+  });
   $("#voiceConfirm").addEventListener("click",confirmVoiceText);
   $("#voiceCancel").addEventListener("click",cancelVoice);
+
   document.addEventListener("click",e=>{
     const b=e.target.closest("[data-voice-target]");
     if(b) startVoice(b.dataset.voiceTarget);
   });
+}
+function setVoiceTitleOnly(title,mode=""){
+  $("#voiceState").textContent=title;
+  $(".voice-console").dataset.state=mode;
 }
 function setVoiceState(title,text,mode=""){
   $("#voiceState").textContent=title;
@@ -134,32 +195,59 @@ function setVoiceState(title,text,mode=""){
 }
 function startVoice(target="auto"){
   if(!voiceRecognition) return;
+
   voiceRequestedTarget=target;
-  $("#voiceTarget").value=[...$("#voiceTarget").options].some(o=>o.value===target)?target:"auto";
-  try{ voiceRecognition.start(); }
-  catch(e){ if(e.name!=="InvalidStateError") setVoiceState("Impossible de démarrer",e.message,"error"); }
+  const optionExists=[...$("#voiceTarget").options].some(o=>o.value===target);
+  $("#voiceTarget").value=optionExists?target:"auto";
+
+  voiceFinalText="";
+  voiceInterimText="";
+  voiceHadError=false;
+  $("#voiceConfirm").disabled=true;
+
+  try{
+    voiceRecognition.start();
+  }catch(e){
+    if(e.name==="InvalidStateError"){
+      setVoiceState("Micro déjà actif","Parle maintenant ou clique pour arrêter.","listening");
+    }else{
+      setVoiceState("Impossible de démarrer",e.message,"error");
+    }
+  }
 }
 function stopVoice(){
+  clearTimeout(voiceStopTimer);
   if(voiceRecognition&&voiceListening) voiceRecognition.stop();
 }
 function cancelVoice(){
-  stopVoice();
+  clearTimeout(voiceStopTimer);
+  if(voiceRecognition&&voiceListening){
+    try{voiceRecognition.abort()}catch{}
+  }
   voiceFinalText="";
+  voiceInterimText="";
+  voiceHadError=false;
   $("#voiceConfirm").disabled=true;
   $("#voiceCancel").disabled=true;
   setVoiceState("Micro en attente","La transcription apparaîtra ici.","");
 }
 function currentVoiceText(){
-  const t=$("#voiceTranscript").textContent.trim();
-  if(!t || t==="Écoute…" || t.startsWith("La transcription")) return "";
-  return t;
+  return (voiceFinalText+voiceInterimText).trim();
 }
 function confirmVoiceText(){
   const text=currentVoiceText();
-  if(!text) return;
+  if(!text){
+    setVoiceState("Aucun texte à utiliser","Refais une dictée puis confirme.","error");
+    return;
+  }
+
   const target=$("#voiceTarget").value==="auto"?voiceRequestedTarget:$("#voiceTarget").value;
+
   if(target==="auto"){
-    if(executeVoiceCommand(text)){ cancelVoice(); return; }
+    if(executeVoiceCommand(text)){
+      cancelVoice();
+      return;
+    }
     writeVoiceTo("quickIdea",text);
   }else{
     writeVoiceTo(target,text);
@@ -175,7 +263,10 @@ function writeVoiceTo(target,text){
   el.value=(el.value?el.value.trim()+" ":"")+text.trim();
   el.dispatchEvent(new Event("input",{bubbles:true}));
   el.focus();
-  if(target==="q"){ showView("projects"); renderProjects(); }
+  if(target==="q"){
+    showView("projects");
+    renderProjects();
+  }
 }
 function normalizeVoice(s){
   return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[’']/g," ").replace(/\s+/g," ").trim();
@@ -196,30 +287,38 @@ function executeVoiceCommand(text){
     return true;
   }
   if(/(ajoute|mettre|mets).*(focus|mode travail)/.test(n) && p){
-    p.focus=true; renderAll(); showView("work");
+    p.focus=true;
+    renderAll();
+    showView("work");
     return true;
   }
   if(/(retire|enleve|supprime).*(focus|mode travail)/.test(n) && p){
-    p.focus=false; renderAll(); showView("work");
+    p.focus=false;
+    renderAll();
+    showView("work");
     return true;
   }
   if(/^(cherche|recherche|trouve)\b/.test(n)){
     const query=text.replace(/^(cherche|recherche|trouve)\s*/i,"").trim();
-    $("#q").value=query; showView("projects"); renderProjects();
+    $("#q").value=query;
+    showView("projects");
+    renderProjects();
     return true;
   }
   if(/(commence|demarre|ouvre).*(journee|mode travail)/.test(n)){
-    showView("work"); return true;
+    showView("work");
+    return true;
   }
   if(/(nouvelle idee|ajoute une idee|note une idee)/.test(n)){
-    let cleaned=text.replace(/.*?(nouvelle idée|ajoute une idée|note une idée)\s*(pour|sur)?\s*/i,"").trim();
+    const cleaned=text.replace(/.*?(nouvelle idée|ajoute une idée|note une idée)\s*(pour|sur)?\s*/i,"").trim();
     const project=p?.name||"Général";
     if(cleaned) addIdea(cleaned,project,"Normale");
     showView("ideas");
     return true;
   }
   if(/(montre|affiche).*(priorites|roadmap)/.test(n)){
-    showView("roadmap"); return true;
+    showView("roadmap");
+    return true;
   }
   return false;
 }

@@ -1,45 +1,36 @@
-# WebStorming OS V1.1 Voice
+# WebStorming OS V1.1.1 Voice Fix
 
-Version vocale du cockpit WebStorming.
+Correctif du module vocal.
 
-## Fonctions vocales
+## Problème corrigé
 
-- bouton global **Parler à WebStorming** ;
-- dictée dans la nouvelle idée ;
-- dictée dans l’Atelier des idées ;
-- recherche vocale ;
-- dictée d’une note dans une fiche projet ;
-- aperçu de la transcription avant utilisation ;
-- annulation avant insertion ;
-- commandes vocales simples.
+La première version pouvait afficher **« Transcription prête »** alors qu’aucune parole n’avait réellement été reconnue.  
+Le texte d’aide était confondu avec une transcription.
 
-## Exemples de commandes
+## Corrections
 
-- « Ouvre Journalia »
-- « Ajoute CounterAttackShield au focus »
-- « Retire Traceware du mode travail »
-- « Recherche immobilier »
-- « Commence ma journée »
-- « Montre la roadmap »
-- « Nouvelle idée pour SW Immobilier : matching automatique des demandes »
+- la validation dépend maintenant uniquement du vrai résultat vocal ;
+- message clair lorsqu’aucune parole n’est détectée ;
+- bouton **Arrêter l’écoute** pendant l’enregistrement ;
+- arrêt automatique après 15 secondes ;
+- erreurs micro, réseau et autorisation mieux expliquées ;
+- aucune insertion si la transcription est vide ;
+- le reste du cockpit continue normalement en cas d’échec vocal.
 
-## Confidentialité
+## Conseil navigateur
 
-WebStorming OS ne sauvegarde pas le fichier audio.  
-Seul le texte confirmé est inséré dans le cockpit.
+La reconnaissance vocale du Web Speech API a une disponibilité limitée selon le navigateur. Pour cette build, utiliser de préférence **Google Chrome** ou **Microsoft Edge**, puis autoriser le microphone.
 
-La reconnaissance dépend du moteur vocal proposé par le navigateur. Si elle n’est pas disponible, le reste de l’application continue normalement.
+## Publication
 
-## Publication GitHub Pages
-
-1. Décompresser l’archive.
-2. Remplacer tous les fichiers du dépôt `webstorming-dev-vault`.
-3. Valider avec **Commit changes** sur `main`.
-4. Attendre le déploiement GitHub Pages.
+1. Décompresser.
+2. Remplacer les fichiers du dépôt.
+3. Faire **Commit changes** sur `main`.
+4. Attendre le déploiement vert.
 5. Recharger avec `Ctrl + F5`.
-6. Autoriser le microphone lors de la première utilisation.
+6. Tester en disant immédiatement : « ouvre Journalia ».
 
 ## Build
 
-- Version : 1.1 Voice
-- Build : WS11V01
+- Version : 1.1.1 Voice Fix
+- Build : WS111VF
