@@ -1,5 +1,5 @@
-/* WebStorming OS V1.2.0 service worker */
-const CACHE = 'webstorming-os-v1.2.0-cockpit-core-fr';
+/* WebStorming OS V1.2.1 service worker */
+const CACHE = 'webstorming-os-v1.2.1-mission-builder';
 const ASSETS = [
   './',
   './index.html',

@@ -1,13 +1,13 @@
-# WebStorming OS V1.2.0 — Cockpit Core FR
+# WebStorming OS V1.2.1 — Mission Builder opérationnel
 
 ## Objectif
 
-Première version du cockpit français de pilotage global des développements : projets, fournisseurs IA, modèles, capacités, routage, missions et mémoire locale.
+Cette version transforme le cockpit en vrai bureau de préparation de missions : choix projet, brique, type de mission, templates, spécialistes recommandés, cahier de mission, export texte/JSON et sauvegarde locale.
 
 ## Installation GitHub Pages
 
-1. Dézipper `webstorming-os-v1.2.0-cockpit-core-fr.zip`.
-2. Envoyer tout le contenu du dossier à la racine du dépôt GitHub Pages, par exemple `webstorming-dev-vault`.
+1. Dézipper `webstorming-os-v1.2.1-mission-builder.zip`.
+2. Envoyer tout le contenu du dossier à la racine du dépôt GitHub Pages `webstorming-dev-vault`.
 3. Vérifier que `.nojekyll` est bien présent.
 4. Commit / push.
 5. Ouvrir :
@@ -22,29 +22,21 @@ https://webstormingproject.github.io/webstorming-dev-vault/
 https://webstormingproject.github.io/webstorming-dev-vault/diagnose.html
 ```
 
-## Important sécurité
+## Nouveautés V1.2.1
 
-Cette V1.2.0 est volontairement un cockpit front/PWA. Elle prépare le gestionnaire API & modèles mais ne doit pas recevoir de clés API de production.
+- Mission Builder opérationnel.
+- Templates prêts : Media Workshop, backend API sécurisé, boot diagnostic PWA, éditorial Gemini/Claude, Smart Router.
+- Sélection de brique Journalia.
+- Version / micro-rush.
+- Livrable attendu.
+- Critères de validation.
+- Scoring automatique des spécialistes.
+- Mission prête à copier vers Codex/Gemini/Claude/autres.
+- Export mission en `.txt`.
+- Copie JSON mission.
+- Sauvegarde et réouverture des missions.
+- Migration de la mémoire locale V1.2.0 vers V1.2.1.
 
-Les vraies clés doivent être stockées dans une phase suivante :
+## Sécurité
 
-- backend WordPress sécurisé ; ou
-- backend local sécurisé ; ou
-- service API privé avec chiffrement.
-
-## Modules inclus
-
-- Dashboard global.
-- Project Launcher.
-- API & Model Manager skeleton.
-- Modèles et capacités.
-- Smart Router par capacité.
-- Mission Builder.
-- Export/import JSON.
-- Mémoire locale navigateur.
-- Boot Guard anti écran bloqué.
-- Diagnostic complet.
-
-## Prochaine étape recommandée
-
-V1.2.1 : backend sécurisé minimal ou connecteur WordPress pour tester les clés sans jamais les exposer au navigateur.
+Cette version reste une PWA statique. Elle ne doit pas recevoir de vraies clés API de production. Les clés réelles doivent passer par un backend sécurisé WordPress/local dans une prochaine phase.

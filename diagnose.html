@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#15100f" />
-  <title>Diagnostic — WebStorming OS V1.2.0</title>
+  <title>Diagnostic — WebStorming OS V1.2.1</title>
   <link rel="stylesheet" href="./assets/css/app.css" />
 </head>
 <body>
@@ -12,7 +12,7 @@
     <section class="topbar" style="margin-top:1rem">
       <div>
         <p class="eyebrow">Diagnostic PWA</p>
-        <h1>WebStorming OS V1.2.0</h1>
+        <h1>WebStorming OS V1.2.1</h1>
         <p>Teste les fichiers essentiels, le service worker, le cache et le stockage local.</p>
       </div>
       <div class="top-actions"><a class="button primary" href="./index.html">Retour cockpit</a><button class="danger" id="purge">Purger cache</button></div>
@@ -48,6 +48,7 @@
         const keys = await caches.keys();
         await Promise.all(keys.map(k => caches.delete(k)));
       }
+      localStorage.removeItem('webstorming-os-cockpit-v121');
       localStorage.removeItem('webstorming-os-cockpit-v120');
       alert('Cache/service worker/mémoire locale purgés.');
       location.href = './index.html';

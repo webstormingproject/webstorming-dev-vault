@@ -1,13 +1,90 @@
 (function () {
   'use strict';
 
-  const VERSION = '1.2.0';
-  const STORAGE_KEY = 'webstorming-os-cockpit-v120';
+  const VERSION = '1.2.1';
+  const STORAGE_KEY = 'webstorming-os-cockpit-v121';
+  const LEGACY_STORAGE_KEYS = ['webstorming-os-cockpit-v120'];
   const CAPABILITIES = [
-    'analyse', 'texte', 'code', 'image', 'video', 'audio', 'wordpress', 'github', 'recherche', 'retouche', 'traduction', 'mission'
+    'analyse', 'texte', 'code', 'image', 'video', 'audio', 'wordpress', 'github', 'recherche', 'retouche', 'traduction', 'mission', 'sécurité', 'backend', 'ux', 'pwa', 'stockage'
   ];
   const STATUS = ['idée', 'cadrage', 'rush', 'test', 'stable', 'pause'];
   const PRIORITIES = ['basse', 'normale', 'haute', 'rush'];
+
+  const BRICKS = [
+    'Journalia Core',
+    'Branche Conseil / Recherche / Développement',
+    'WebStorming OS',
+    'WordPress Cockpit',
+    'AI Media Studio',
+    'Media Workshop',
+    'Provider Manager',
+    'Smart Router',
+    'Job Queue',
+    'Storage / CDN',
+    'Editorial Engine',
+    'Voice & Avatar Engine',
+    'Monitoring / Sécurité'
+  ];
+
+  const SPECIALIST_LIBRARY = [
+    { name: 'Branche Conseil / R&D', role: 'Analyse, arbitrage, architecture, cohérence globale', triggers: ['analyse', 'architecture', 'cadrage', 'besoin', 'solution', 'journalia'], weight: 100 },
+    { name: 'Journalia Codex', role: 'Code, plugin, refactoring, ZIP, tests techniques', triggers: ['code', 'codage', 'plugin', 'wordpress', 'php', 'javascript', 'js', 'github', 'zip', 'bug', 'patch', 'pwa'], weight: 80 },
+    { name: 'Gemini / Claude', role: 'Texte long, rédaction, script, angle éditorial, prompt pack', triggers: ['texte', 'rédaction', 'article', 'script', 'éditorial', 'prompt', 'mission'], weight: 70 },
+    { name: 'Modèle Image spécialisé', role: 'Image, retouche, remplacement, upscale, variantes visuelles', triggers: ['image', 'photo', 'retouche', 'visuel', 'upscale', 'background', 'fond'], weight: 65 },
+    { name: 'Modèle Vidéo / Pipeline', role: 'Vidéo, montage, JT, avatar, image-to-video, génération séquence', triggers: ['vidéo', 'video', 'jt', 'montage', 'avatar', 'b-roll'], weight: 65 },
+    { name: 'Moteur Audio / TTS', role: 'Voix, narration, ambiance sonore, mixage', triggers: ['audio', 'voix', 'tts', 'son', 'musique'], weight: 55 },
+    { name: 'Backend sécurisé WordPress/local', role: 'Secrets, chiffrement, appels serveur, nonces, permissions', triggers: ['clé', 'api', 'secret', 'sécurité', 'backend', 'nonce', 'chiffrement'], weight: 60 },
+    { name: 'UX / PWA', role: 'Interface, boot guard, responsive, diagnostic, installation', triggers: ['ux', 'interface', 'mobile', 'pwa', 'responsive', 'diagnostic', 'boot'], weight: 50 },
+    { name: 'Storage / CDN', role: 'Médiathèque, stockage vidéos, quota, cache, CDN, rollback', triggers: ['stockage', 'cdn', 'média', 'mediatheque', 'rollback', 'quota'], weight: 50 }
+  ];
+
+  const MISSION_TEMPLATES = {
+    mediaWorkshop: {
+      label: 'Media Workshop',
+      brick: 'Media Workshop',
+      missionType: 'codage',
+      deliverable: 'ZIP WordPress/PWA installable + documentation + journal de tests',
+      need: 'Développer la prochaine micro-version de Journalia Media Workshop : retouche/remplacement média, variantes non destructives, historique, logs, formats et préparation intégration IA.',
+      constraints: 'WordPress/cPanel LWS, sécurité des clés côté serveur, aucune vraie clé dans le front, édition non destructive, rollback obligatoire, micro-rush testable, pas d’usine à gaz.',
+      acceptance: 'Plugin installable, interface visible, sélection média, création variante, historique, logs, rollback ou préparation rollback, documentation courte.'
+    },
+    backendApi: {
+      label: 'Backend API sécurisé',
+      brick: 'Provider Manager',
+      missionType: 'cadrage',
+      deliverable: 'Architecture + endpoints + plan de stockage chiffré + micro-rush backend',
+      need: 'Concevoir le backend sécurisé qui stocke les clés API et exécute les appels IA côté serveur sans exposer les secrets au navigateur.',
+      constraints: 'WordPress, permissions admin, nonces REST, chiffrement ou masquage robuste, logs sans secrets, test clé/modèles, fallback futur.',
+      acceptance: 'Endpoints protégés, aucune clé exposée, test fournisseur, retour erreur lisible, documentation d’installation.'
+    },
+    bootFix: {
+      label: 'Boot / Diagnostic PWA',
+      brick: 'WebStorming OS',
+      missionType: 'audit',
+      deliverable: 'Patch PWA + diagnose.html + boot guard robuste',
+      need: 'Renforcer le démarrage PWA : aucun écran bloqué, diagnostic visible, purge cache, gestion service worker, erreurs JavaScript lisibles.',
+      constraints: 'GitHub Pages, chemins relatifs, Chrome/Edge/Brave, compatibilité desktop/mobile, message utilisateur clair.',
+      acceptance: 'Fichiers en HTTP 200, panneau uniquement si vraie erreur, bouton purge cache, retour app fonctionnel.'
+    },
+    editorial: {
+      label: 'Mission éditoriale Gemini/Claude',
+      brick: 'Editorial Engine',
+      missionType: 'texte',
+      deliverable: 'Pack rédactionnel prêt à transmettre + variantes + critères qualité',
+      need: 'Préparer une mission de rédaction ou de structuration éditoriale pour Gemini/Claude avec contexte, ton, livrables et critères de validation.',
+      constraints: 'Texte clair, angle premium, cohérence Journalia, possibilité de variantes, pas de remplissage inutile.',
+      acceptance: 'Texte exploitable, variantes utiles, critères de contrôle et retour d’expertise.'
+    },
+    router: {
+      label: 'Smart Router / Fallback',
+      brick: 'Smart Router',
+      missionType: 'cadrage',
+      deliverable: 'Spécification routeur + scoring + fallback + quarantaine',
+      need: 'Définir le routeur intelligent qui choisit le bon spécialiste selon capacité, coût, fiabilité, priorité et disponibilité.',
+      constraints: 'Fallback multi-fournisseurs, logs lisibles, pas de blocage production, statut modèle, quarantaine temporaire.',
+      acceptance: 'Matrice capacités, règles de scoring, schéma de jobs, messages de diagnostic.'
+    }
+  };
 
   const seedState = () => ({
     meta: {
@@ -38,10 +115,10 @@
         priority: 'haute',
         channel: 'PWA / GitHub Pages puis backend sécurisé',
         goal: 'Centraliser les projets, les IA, les missions, les clés, les modèles et les décisions.',
-        next: 'Tester Cockpit Core FR puis préparer connexion backend WordPress ou local sécurisé.',
+        next: 'Tester Mission Builder opérationnel puis préparer connexion backend WordPress ou local sécurisé.',
         notes: 'Ne jamais stocker les clés de production dans une app statique. Backend obligatoire pour secrets réels.',
         createdAt: new Date().toISOString(),
-        decisions: ['V1.2.0 = Project Launcher + API Manager skeleton + Mission Builder.']
+        decisions: ['V1.2.1 = Mission Builder opérationnel + templates + exports mission.']
       },
       {
         id: uid('prj'),
@@ -110,7 +187,7 @@
     ],
     missions: [],
     logs: [
-      { id: uid('log'), at: new Date().toISOString(), level: 'info', message: 'Cockpit Core FR initialisé.' }
+      { id: uid('log'), at: new Date().toISOString(), level: 'info', message: 'Mission Builder opérationnel initialisé.' }
     ]
   });
 
@@ -122,20 +199,35 @@
     return String(value ?? '').replace(/[&<>'"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[ch]));
   }
 
+  function normalizeState(parsed) {
+    parsed.projects ||= [];
+    parsed.providers ||= [];
+    parsed.missions ||= [];
+    parsed.logs ||= [];
+    parsed.meta ||= { version: VERSION };
+    return parsed;
+  }
+
   function loadState() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      let raw = localStorage.getItem(STORAGE_KEY);
+      let migratedFrom = '';
+      if (!raw) {
+        for (const key of LEGACY_STORAGE_KEYS) {
+          const legacy = localStorage.getItem(key);
+          if (legacy) { raw = legacy; migratedFrom = key; break; }
+        }
+      }
       if (!raw) {
         const state = seedState();
         saveState(state);
         return state;
       }
-      const parsed = JSON.parse(raw);
-      parsed.projects ||= [];
-      parsed.providers ||= [];
-      parsed.missions ||= [];
-      parsed.logs ||= [];
-      parsed.meta ||= { version: VERSION };
+      const parsed = normalizeState(JSON.parse(raw));
+      if (migratedFrom) {
+        parsed.logs.unshift({ id: uid('log'), at: new Date().toISOString(), level: 'info', message: `Migration mémoire locale depuis ${migratedFrom}` });
+        saveState(parsed);
+      }
       return parsed;
     } catch (err) {
       console.warn('State load error, reseeding', err);
@@ -156,6 +248,7 @@
   let activeView = 'dashboard';
   let selectedProjectId = state.projects[0]?.id || '';
   let lastMissionText = '';
+  let lastMissionPayload = null;
 
   function addLog(level, message) {
     state.logs.unshift({ id: uid('log'), at: new Date().toISOString(), level, message });
@@ -218,7 +311,7 @@
         <div class="sidebar-footer">
           <button type="button" class="primary" data-open-modal="project">+ Nouveau projet</button>
           <button type="button" class="secondary" data-action="install-pwa">Installer PWA</button>
-          <div class="tiny-note"><strong>Mode V1.2.0 :</strong> cockpit local navigateur. Les clés de production doivent passer par un backend sécurisé WordPress/local dans la prochaine phase.</div>
+          <div class="tiny-note"><strong>Mode V1.2.1 :</strong> cockpit local navigateur. Les clés de production doivent passer par un backend sécurisé WordPress/local dans la prochaine phase.</div>
         </div>
       </aside>
     `;
@@ -271,7 +364,7 @@
         </div>
         <div class="card security-box">
           <strong>Sécurité clés API</strong>
-          <p>Cette V1.2.0 est un cockpit front/PWA. Elle prépare le gestionnaire de clés, mais les vraies clés sensibles ne doivent pas être utilisées en production ici. Prochaine étape : backend sécurisé WordPress/local pour chiffrement et appels serveur.</p>
+          <p>Cette V1.2.1 est un cockpit front/PWA. Elle prépare le gestionnaire de clés, mais les vraies clés sensibles ne doivent pas être utilisées en production ici. Prochaine étape : backend sécurisé WordPress/local pour chiffrement et appels serveur.</p>
         </div>
       </div>
       <div class="card" style="margin-top:1rem">
@@ -350,7 +443,7 @@
         </div>
         <div class="card security-box">
           <strong>Rappel important</strong>
-          <p>Stockage clés : V1.2.0 = squelette local. Pour production, on branchera une table WordPress/backend avec chiffrement, permissions, nonces et appels serveur.</p>
+          <p>Stockage clés : V1.2.1 = squelette local. Pour production, on branchera une table WordPress/backend avec chiffrement, permissions, nonces et appels serveur.</p>
         </div>
       </div>
       <div class="card" style="margin-top:1rem">
@@ -428,13 +521,25 @@
   function renderMissionBuilder() {
     const projectOptions = state.projects.map(p => `<option value="${p.id}" ${p.id === selectedProjectId ? 'selected' : ''}>${escapeHtml(p.name)}</option>`).join('');
     const current = state.projects.find(p => p.id === selectedProjectId) || state.projects[0];
-    const recommended = current ? recommendSpecialists(current.goal + ' ' + current.next + ' ' + current.family) : [];
+    const previewText = [current?.goal, current?.next, current?.family, current?.notes].filter(Boolean).join(' ');
+    const recommended = rankSpecialists(previewText).slice(0, 6);
+    const missionCount = state.missions.length;
     return `
-      <div class="grid cols-2">
+      <div class="grid cols-4">
+        ${kpi('Templates', Object.keys(MISSION_TEMPLATES).length, '📦')}
+        ${kpi('Missions sauvées', missionCount, '🚀')}
+        ${kpi('Briques', BRICKS.length, '🧩')}
+        ${kpi('Spécialistes', SPECIALIST_LIBRARY.length, '🧠')}
+      </div>
+      <div class="grid cols-2" style="margin-top:1rem">
         <div class="card">
-          <h2>Créer une mission</h2>
-          <form id="mission-form" class="form">
+          <div class="item-header"><h2>Créer une mission</h2><span class="badge green">V1.2.1 opérationnel</span></div>
+          <div class="template-grid" aria-label="Templates de mission">
+            ${Object.entries(MISSION_TEMPLATES).map(([key, t]) => `<button type="button" class="template-card" data-action="apply-template" data-template="${key}"><strong>${escapeHtml(t.label)}</strong><span>${escapeHtml(t.brick)}</span></button>`).join('')}
+          </div>
+          <form id="mission-form" class="form two">
             <div class="field"><label>Projet</label><select name="projectId">${projectOptions}</select></div>
+            <div class="field"><label>Brique concernée</label><select name="brick">${BRICKS.map(b => `<option>${escapeHtml(b)}</option>`).join('')}</select></div>
             <div class="field"><label>Type de mission</label><select name="missionType">
               <option value="cadrage">Cadrage / architecture</option>
               <option value="codage">Codage / correction</option>
@@ -442,35 +547,66 @@
               <option value="image">Image / retouche</option>
               <option value="video">Vidéo / média</option>
               <option value="audit">Audit / test</option>
+              <option value="backend">Backend sécurisé</option>
             </select></div>
-            <div class="field"><label>Besoin précis</label><textarea name="need" placeholder="Décris la mission à lancer..."></textarea></div>
-            <div class="field"><label>Contraintes</label><textarea name="constraints" placeholder="Sécurité, WordPress, cPanel, GitHub, délais, versions, etc."></textarea></div>
-            <button class="primary" type="submit">Générer mission</button>
+            <div class="field"><label>Version / micro-rush</label><input name="rushVersion" placeholder="Ex : V0.1.1, V1.2.2, patch ciblé" /></div>
+            <div class="field" style="grid-column:1/-1"><label>Besoin précis</label><textarea name="need" placeholder="Décris la mission à lancer..."></textarea></div>
+            <div class="field" style="grid-column:1/-1"><label>Livrable attendu</label><textarea name="deliverable" placeholder="ZIP, plugin, doc, patch, cahier de mission, audit..."></textarea></div>
+            <div class="field" style="grid-column:1/-1"><label>Contraintes</label><textarea name="constraints" placeholder="Sécurité, WordPress, cPanel, GitHub, délais, versions, etc."></textarea></div>
+            <div class="field" style="grid-column:1/-1"><label>Critères de validation</label><textarea name="acceptance" placeholder="Comment sait-on que la mission est réussie ?"></textarea></div>
+            <div class="button-row" style="grid-column:1/-1">
+              <button class="primary" type="submit">Générer mission</button>
+              <button class="secondary" type="button" data-action="mission-json">Copier JSON mission</button>
+              <button class="ghost" type="button" data-action="clear-mission-form">Nettoyer</button>
+            </div>
           </form>
         </div>
         <div class="card soft">
-          <h2>Spécialistes recommandés</h2>
-          <p>Pour le projet sélectionné :</p>
-          <div class="meta">${recommended.map(r => `<span class="badge gold">${escapeHtml(r)}</span>`).join(' ') || '<span class="badge">à préciser</span>'}</div>
-          <p style="margin-top:1rem">Le document généré respecte la chaîne Journalia : analyse, répartition, expertise, retour terrain et droit de remontée technique.</p>
+          <h2>Analyse spécialistes</h2>
+          <p>Recommandation automatique selon projet, besoin, brique et capacités.</p>
+          <div class="specialist-list">
+            ${recommended.map(r => `<div class="specialist-row"><div><strong>${escapeHtml(r.name)}</strong><p>${escapeHtml(r.role)}</p></div><span class="badge gold">score ${r.score}</span></div>`).join('') || '<p>À préciser.</p>'}
+          </div>
+          <div class="callout"><strong>Règle :</strong> le spécialiste aval peut remonter une meilleure solution. La mission doit rester collaborative, pas exécutée bêtement.</div>
         </div>
       </div>
       <div class="card" style="margin-top:1rem">
-        <div class="item-header"><h2>Mission prête à transmettre</h2><div class="button-row"><button class="secondary" data-action="copy-mission">Copier</button><button class="ghost" data-action="save-mission">Sauver mission</button></div></div>
-        <pre id="mission-output" class="mission-output">${escapeHtml(lastMissionText || 'Remplis le formulaire pour générer une mission structurée.')}</pre>
+        <div class="item-header"><h2>Mission prête à transmettre</h2><div class="button-row"><button class="secondary" data-action="copy-mission">Copier</button><button class="ghost" data-action="save-mission">Sauver mission</button><button class="ghost" data-action="download-mission">Télécharger .txt</button></div></div>
+        <pre id="mission-output" class="mission-output">${escapeHtml(lastMissionText || 'Choisis un template ou remplis le formulaire pour générer une mission structurée.')}</pre>
+      </div>
+      <div class="card" style="margin-top:1rem">
+        <h2>Missions sauvegardées</h2>
+        <div class="list">${renderSavedMissions(6)}</div>
       </div>
     `;
   }
 
+  function renderSavedMissions(limit) {
+    const missions = state.missions.slice(0, limit || state.missions.length);
+    if (!missions.length) return '<p>Aucune mission sauvegardée pour le moment.</p>';
+    return missions.map(m => {
+      const project = state.projects.find(p => p.id === m.projectId);
+      return `<article class="item">
+        <div class="item-header">
+          <div><h3>${escapeHtml(m.title || 'Mission sauvegardée')}</h3><div class="meta"><span class="badge gold">${escapeHtml(project?.name || m.projectName || 'Projet')}</span><span>${new Date(m.at).toLocaleString('fr-FR')}</span></div></div>
+          <div class="button-row"><button class="secondary" data-action="load-mission" data-id="${m.id}">Ouvrir</button><button class="ghost" data-action="copy-saved-mission" data-id="${m.id}">Copier</button><button class="danger" data-action="delete-mission" data-id="${m.id}">Suppr.</button></div>
+        </div>
+        <p>${escapeHtml((m.summary || m.text || '').slice(0, 210))}${(m.summary || m.text || '').length > 210 ? '…' : ''}</p>
+      </article>`;
+    }).join('');
+  }
+
+  function rankSpecialists(text) {
+    const lower = String(text || '').toLowerCase();
+    return SPECIALIST_LIBRARY.map(sp => {
+      const hits = sp.triggers.filter(t => lower.includes(t.toLowerCase())).length;
+      const score = sp.weight + (hits * 14);
+      return { ...sp, score };
+    }).filter(sp => sp.name === 'Branche Conseil / R&D' || sp.score > sp.weight).sort((a, b) => b.score - a.score);
+  }
+
   function recommendSpecialists(text) {
-    const lower = text.toLowerCase();
-    const out = ['Branche Conseil / R&D'];
-    if (/code|plugin|wordpress|php|js|github|zip|correction|développement/.test(lower)) out.push('Journalia Codex');
-    if (/texte|article|rédaction|script|éditorial|prompt/.test(lower)) out.push('Gemini / Claude');
-    if (/image|photo|retouche|visuel/.test(lower)) out.push('Modèle Image spécialisé');
-    if (/video|vidéo|jt|montage|avatar/.test(lower)) out.push('Modèle Vidéo / Pipeline');
-    if (/audio|voix|tts|son/.test(lower)) out.push('Moteur Audio / TTS');
-    return Array.from(new Set(out));
+    return rankSpecialists(text).map(s => `${s.name} — ${s.role}`);
   }
 
   function renderMemory() {
@@ -480,6 +616,7 @@
         <div class="card"><h2>Export / sauvegarde</h2><p>Exporte tout le cockpit en JSON : projets, fournisseurs, modèles, missions, logs. Tu peux le garder comme sauvegarde ou le réimporter plus tard.</p><div class="button-row"><button class="primary" data-action="export-json">Télécharger JSON</button><button class="secondary" data-action="copy-json">Copier JSON</button><button class="danger" data-action="reset-state">Réinitialiser</button></div></div>
         <div class="card"><h2>Import</h2><p>Colle un export JSON valide pour restaurer la mémoire locale.</p><form id="import-form" class="form"><textarea name="json" placeholder="Coller JSON ici"></textarea><button class="secondary" type="submit">Importer</button></form></div>
       </div>
+      <div class="card" style="margin-top:1rem"><h2>Missions sauvegardées</h2><div class="list">${renderSavedMissions()}</div></div>
       <div class="card" style="margin-top:1rem"><h2>Logs récents</h2><div class="list">${state.logs.slice(0,12).map(l => `<div class="item"><div class="meta"><span class="badge ${l.level === 'error' ? 'red' : 'green'}">${escapeHtml(l.level)}</span><span>${new Date(l.at).toLocaleString('fr-FR')}</span></div><div>${escapeHtml(l.message)}</div></div>`).join('')}</div></div>
       <div class="card" style="margin-top:1rem"><h2>JSON courant</h2><pre class="json-output">${escapeHtml(data)}</pre></div>
     `;
@@ -507,7 +644,7 @@
       <div id="modal-provider" class="modal" role="dialog" aria-modal="true" aria-label="Ajouter fournisseur">
         <div class="modal-card">
           <div class="modal-head"><h2>Ajouter fournisseur IA/API</h2><button class="close ghost" data-close-modal>×</button></div>
-          <div class="security-box" style="margin-bottom:1rem"><strong>V1.2.0 :</strong> n’utilise pas ici une clé de production. Le vrai stockage sécurisé arrive en backend WordPress/local.</div>
+          <div class="security-box" style="margin-bottom:1rem"><strong>V1.2.1 :</strong> n’utilise pas ici une clé de production. Le vrai stockage sécurisé arrive en backend WordPress/local.</div>
           <form id="provider-form" class="form two">
             <div class="field"><label>Nom fournisseur</label><input name="name" required placeholder="OpenAI, Gemini, Runway..." /></div>
             <div class="field"><label>Type</label><input name="type" placeholder="Texte, code, image, vidéo..." /></div>
@@ -552,7 +689,7 @@
     if (modelForm) modelForm.addEventListener('submit', onModelSubmit);
     const missionForm = document.getElementById('mission-form');
     if (missionForm) missionForm.addEventListener('submit', onMissionSubmit);
-    if (missionForm) missionForm.projectId.addEventListener('change', e => { selectedProjectId = e.target.value; render(); });
+    if (missionForm && missionForm.elements.projectId) missionForm.elements.projectId.addEventListener('change', e => { selectedProjectId = e.target.value; render(); });
     const importForm = document.getElementById('import-form');
     if (importForm) importForm.addEventListener('submit', onImportSubmit);
 
@@ -635,18 +772,69 @@
     const fd = new FormData(e.currentTarget);
     selectedProjectId = fd.get('projectId');
     const project = state.projects.find(p => p.id === selectedProjectId);
-    const type = fd.get('missionType');
-    const need = fd.get('need') || project?.next || '';
-    const constraints = fd.get('constraints') || 'Respecter l’architecture Journalia, sécurité, modularité, micro-rush, tests et retour d’expertise.';
-    lastMissionText = buildMission(project, type, need, constraints);
-    addLog('info', `Mission générée pour ${project?.name || 'projet'}`);
+    const missionData = {
+      project,
+      type: fd.get('missionType'),
+      brick: fd.get('brick'),
+      rushVersion: fd.get('rushVersion') || 'micro-rush à définir',
+      need: fd.get('need') || project?.next || '',
+      deliverable: fd.get('deliverable') || 'Livrable testable + documentation courte + retour d’expertise.',
+      constraints: fd.get('constraints') || 'Respecter l’architecture Journalia, sécurité, modularité, micro-rush, tests et retour d’expertise.',
+      acceptance: fd.get('acceptance') || 'Installation/test sans blocage, résultat vérifiable, erreurs lisibles, pas de régression évidente.'
+    };
+    lastMissionText = buildMission(missionData);
+    lastMissionPayload = missionPayloadFromData(missionData, lastMissionText);
+    addLog('info', `Mission générée pour ${project?.name || 'projet'} / ${missionData.brick}`);
     render();
     toast('Mission générée.');
   }
 
-  function buildMission(project, type, need, constraints) {
-    const specialists = recommendSpecialists(`${type} ${need} ${project?.goal || ''}`);
-    return `MISSION JOURNALIA / WEBSTORMING OS\n\nProjet : ${project?.name || 'Non défini'}\nFamille : ${project?.family || '-'}\nType de mission : ${type}\nPriorité : ${project?.priority || 'normale'}\n\n1. CONTEXTE\n${project?.goal || 'Contexte à préciser.'}\n\n2. BESOIN À TRAITER\n${need}\n\n3. CONTRAINTES / CADRE\n${constraints}\n\n4. SPÉCIALISTES RECOMMANDÉS\n${specialists.map(s => '- ' + s).join('\n')}\n\n5. ATTENDUS\n- Analyse technique avant exécution\n- Proposition de meilleure solution si nécessaire\n- Développement par micro-rush\n- Livraison testable\n- Logs/diagnostic lisibles\n- Documentation d’installation\n- Retour d’expertise si une option plus solide est détectée\n\n6. RÈGLE PHILOSOPHIQUE JOURNALIA\nAucun intervenant n’est un simple exécutant. Chaque brique doit analyser, proposer, alerter et faire remonter toute meilleure solution. Le dernier étage a le même pouvoir d’expertise que le premier si son analyse améliore la mission.\n\n7. PROCHAINE ACTION\nPréparer une V0.1/V1 testable, limitée, stable, et éviter toute usine à gaz.`;
+  function buildMission(data) {
+    const project = data.project || {};
+    const analysisText = [data.type, data.brick, data.need, data.deliverable, data.constraints, project.goal, project.family].filter(Boolean).join(' ');
+    const specialists = rankSpecialists(analysisText).slice(0, 8);
+    const primary = specialists[0]?.name || 'Branche Conseil / R&D';
+    return `MISSION JOURNALIA / WEBSTORMING OS — ${data.rushVersion}\n\nProjet : ${project.name || 'Non défini'}\nFamille : ${project.family || '-'}\nBrique concernée : ${data.brick || '-'}\nType de mission : ${data.type || '-'}\nPriorité projet : ${project.priority || 'normale'}\nResponsable de cadrage : Branche Conseil / Recherche / Développement\nSpécialiste principal pressenti : ${primary}\n\n1. CONTEXTE\n${project.goal || 'Contexte à préciser.'}\n\n2. BESOIN À TRAITER\n${data.need}\n\n3. LIVRABLE ATTENDU\n${data.deliverable}\n\n4. CONTRAINTES / CADRE\n${data.constraints}\n\n5. CHAÎNE DE TRANSMISSION / SPÉCIALISTES\n${specialists.map((s, i) => `${i + 1}. ${s.name} — ${s.role} — score ${s.score}`).join('\n')}\n\n6. MÉTHODE MICRO-RUSH\n- Livrer petit, testable, installable ou vérifiable.\n- Ne pas développer l’usine complète d’un coup.\n- Séparer socle, sécurité, interface, stockage, IA réelle et fallback.\n- Produire un retour clair : fait / non fait / risque / proposition meilleure.\n\n7. CRITÈRES DE VALIDATION\n${data.acceptance}\n\n8. RETOUR D’EXPERTISE OBLIGATOIRE\nLe spécialiste chargé de la mission ne doit pas exécuter bêtement. S’il détecte une solution plus solide, plus simple, plus sûre ou plus évolutive, il doit faire remonter l’analyse avant ou pendant l’exécution.\n\n9. RÈGLE PHILOSOPHIQUE JOURNALIA\nAucun intervenant n’est un simple exécutant. Chaque brique analyse, donne son expertise, propose, alerte et remonte les meilleures solutions. Le dernier étage a le même pouvoir d’expertise que le premier si son analyse améliore la mission.\n\n10. PROCHAINE ACTION\nPréparer la prochaine livraison micro-rush, avec fichiers, test, diagnostic, documentation courte et plan de suite.`;
+  }
+
+  function missionPayloadFromData(data, text) {
+    const project = data.project || {};
+    const specialists = rankSpecialists([data.type, data.brick, data.need, data.deliverable, data.constraints, project.goal, project.family].filter(Boolean).join(' ')).slice(0, 8);
+    return {
+      version: VERSION,
+      createdAt: new Date().toISOString(),
+      project: project.id ? { id: project.id, name: project.name, family: project.family, priority: project.priority } : null,
+      brick: data.brick,
+      missionType: data.type,
+      rushVersion: data.rushVersion,
+      need: data.need,
+      deliverable: data.deliverable,
+      constraints: data.constraints,
+      acceptance: data.acceptance,
+      specialists,
+      missionText: text || ''
+    };
+  }
+
+  function currentMissionPayload() {
+    const form = document.getElementById('mission-form');
+    if (!form) return null;
+    const fd = new FormData(form);
+    const project = state.projects.find(p => p.id === fd.get('projectId'));
+    return {
+      version: VERSION,
+      createdAt: new Date().toISOString(),
+      project: project ? { id: project.id, name: project.name, family: project.family, priority: project.priority } : null,
+      brick: fd.get('brick'),
+      missionType: fd.get('missionType'),
+      rushVersion: fd.get('rushVersion'),
+      need: fd.get('need'),
+      deliverable: fd.get('deliverable'),
+      constraints: fd.get('constraints'),
+      acceptance: fd.get('acceptance'),
+      specialists: rankSpecialists([fd.get('missionType'), fd.get('brick'), fd.get('need'), fd.get('deliverable'), fd.get('constraints')].join(' ')).slice(0, 8),
+      missionText: lastMissionText || ''
+    };
   }
 
   function onImportSubmit(e) {
@@ -674,8 +862,15 @@
     if (action === 'select-project') { selectedProjectId = id; activeView = 'mission'; return render(); }
     if (action === 'delete-project') return deleteProject(id);
     if (action === 'delete-provider') return deleteProvider(id);
+    if (action === 'apply-template') return applyTemplate(btn.dataset.template);
+    if (action === 'clear-mission-form') return clearMissionForm();
+    if (action === 'mission-json') return copyMissionJson();
     if (action === 'copy-mission') return copyText(lastMissionText || document.getElementById('mission-output')?.textContent || '');
     if (action === 'save-mission') return saveMission();
+    if (action === 'download-mission') return downloadMission();
+    if (action === 'load-mission') return loadMission(id);
+    if (action === 'copy-saved-mission') return copySavedMission(id);
+    if (action === 'delete-mission') return deleteMission(id);
     if (action === 'export-json') return exportJson();
     if (action === 'copy-json') return copyText(JSON.stringify(state, null, 2));
     if (action === 'reset-state') return resetState();
@@ -701,13 +896,93 @@
     toast('Fournisseur supprimé.');
   }
 
+  function applyTemplate(key) {
+    const tpl = MISSION_TEMPLATES[key];
+    const form = document.getElementById('mission-form');
+    if (!tpl || !form) return;
+    form.elements.brick.value = tpl.brick;
+    form.elements.missionType.value = tpl.missionType;
+    form.elements.rushVersion.value = key === 'mediaWorkshop' ? 'V0.1.1' : 'V1.2.2';
+    form.elements.need.value = tpl.need;
+    form.elements.deliverable.value = tpl.deliverable;
+    form.elements.constraints.value = tpl.constraints;
+    form.elements.acceptance.value = tpl.acceptance;
+    toast(`Template chargé : ${tpl.label}`);
+  }
+
+  function clearMissionForm() {
+    const form = document.getElementById('mission-form');
+    if (!form) return;
+    form.reset();
+    if (selectedProjectId && form.elements.projectId) form.elements.projectId.value = selectedProjectId;
+    lastMissionText = '';
+    lastMissionPayload = null;
+    render();
+    toast('Formulaire nettoyé.');
+  }
+
   function saveMission() {
     if (!lastMissionText) return toast('Aucune mission à sauvegarder.');
-    state.missions.unshift({ id: uid('mis'), at: new Date().toISOString(), projectId: selectedProjectId, text: lastMissionText });
+    const payload = lastMissionPayload || currentMissionPayload() || {};
+    const project = state.projects.find(p => p.id === selectedProjectId);
+    state.missions.unshift({
+      id: uid('mis'),
+      at: new Date().toISOString(),
+      title: `${payload.brick || 'Mission'} — ${payload.rushVersion || 'micro-rush'}`,
+      summary: payload.need || lastMissionText.slice(0, 240),
+      projectId: selectedProjectId,
+      projectName: project?.name || payload.project?.name || '',
+      payload,
+      text: lastMissionText,
+      status: 'draft'
+    });
     addLog('info', 'Mission sauvegardée dans la mémoire locale.');
     saveState(state);
     render();
     toast('Mission sauvegardée.');
+  }
+
+  function loadMission(id) {
+    const mission = state.missions.find(m => m.id === id);
+    if (!mission) return toast('Mission introuvable.');
+    selectedProjectId = mission.projectId || selectedProjectId;
+    lastMissionText = mission.text || '';
+    activeView = 'mission';
+    render();
+    toast('Mission chargée.');
+  }
+
+  function copySavedMission(id) {
+    const mission = state.missions.find(m => m.id === id);
+    return copyText(mission?.text || '');
+  }
+
+  function deleteMission(id) {
+    const mission = state.missions.find(m => m.id === id);
+    if (!mission || !confirm('Supprimer cette mission sauvegardée ?')) return;
+    state.missions = state.missions.filter(m => m.id !== id);
+    addLog('info', `Mission supprimée : ${mission.title || mission.id}`);
+    saveState(state);
+    render();
+    toast('Mission supprimée.');
+  }
+
+  function copyMissionJson() {
+    const payload = lastMissionPayload || currentMissionPayload();
+    if (!payload) return toast('Aucune mission active.');
+    return copyText(JSON.stringify(payload, null, 2));
+  }
+
+  function downloadMission() {
+    if (!lastMissionText) return toast('Aucune mission à télécharger.');
+    const blob = new Blob([lastMissionText], { type: 'text/plain;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `mission-webstorming-${new Date().toISOString().slice(0,10)}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    toast('Téléchargement mission lancé.');
   }
 
   async function copyText(text) {
@@ -737,6 +1012,7 @@
     saveState(state);
     activeView = 'dashboard';
     lastMissionText = '';
+    lastMissionPayload = null;
     render();
     toast('Mémoire réinitialisée.');
   }

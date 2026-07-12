@@ -1,4 +1,4 @@
-# Patch V1.2.0 — Cockpit Core FR
+# Patch V1.2.1 — Mission Builder opérationnel
 
 ## À appliquer
 
@@ -6,16 +6,15 @@ Remplacer la version GitHub Pages courante par le contenu complet de ce dossier.
 
 ## Nouveautés principales
 
-- Cockpit global en français.
-- Dashboard projets.
-- Project Launcher.
-- API & Model Manager skeleton.
-- Classification modèles par capacités.
-- Smart Router / fallback théorique.
-- Mission Builder pour préparer des missions Codex/Gemini/Claude/autres.
-- Export/import JSON.
-- Boot Guard hérité des correctifs V1.1.x.
+- Le Mission Builder devient exploitable pour préparer des missions Codex/Gemini/Claude/autres.
+- Ajout de templates de mission.
+- Ajout des briques Journalia.
+- Ajout livrable attendu + critères de validation.
+- Scoring spécialistes selon texte/projet/brique.
+- Export TXT et JSON d’une mission.
+- Sauvegarde/réouverture/copie/suppression des missions.
+- Migration automatique depuis la mémoire locale V1.2.0.
 
-## Règle sécurité
+## Règle Journalia conservée
 
-Ne pas saisir de vraie clé API de production dans cette version statique.
+Aucun intervenant n’est un simple exécutant. Chaque brique analyse, propose, alerte et remonte toute meilleure solution.

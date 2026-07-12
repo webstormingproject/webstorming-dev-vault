@@ -1,4 +1,4 @@
-WebStorming OS V1.2.0 — Cockpit Core FR
+WebStorming OS V1.2.1 — Mission Builder opérationnel
 Date: 2026-07-12
 Type: Static PWA / GitHub Pages ready
-Modules: Dashboard, Project Launcher, API & Model Manager skeleton, Smart Router, Mission Builder, Project Memory, Export/Import JSON, Boot Guard, Diagnose page
+Modules: Dashboard, Project Launcher, API & Model Manager skeleton, Smart Router, Mission Builder opérationnel, Templates de mission, Scoring spécialistes, Export TXT/JSON mission, Mémoire missions, Boot Guard, Diagnose page

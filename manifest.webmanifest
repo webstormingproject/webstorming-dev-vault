@@ -1,7 +1,7 @@
 {
-  "name": "WebStorming OS — Cockpit FR",
-  "short_name": "WS Cockpit",
-  "description": "Cockpit français de pilotage global des développements multi-IA.",
+  "name": "WebStorming OS — Mission Builder",
+  "short_name": "WS Mission",
+  "description": "Cockpit de préparation de missions multi-IA, micro-rush et chaîne Conseil/R&D.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
