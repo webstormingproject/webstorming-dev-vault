@@ -1,7 +1,7 @@
 {
   "appName": "WebStorming OS",
-  "version": "1.1.2 Long Voice",
-  "build": "WS112LV",
+  "version": "1.1.3 Tournant Crucial",
+  "build": "WS113TC",
   "githubOwner": "webstormingproject",
   "centralRepo": "webstorming-dev-vault",
   "pagesUrl": "https://webstormingproject.github.io/webstorming-dev-vault/",
@@ -12,7 +12,7 @@
     "language": "fr-FR",
     "continuous": true,
     "autoRestart": true,
-    "manualStop": true,
+    "autoSubmitOnStop": true,
     "audioStored": false
   }
 }

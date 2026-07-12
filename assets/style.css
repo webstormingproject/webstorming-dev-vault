@@ -144,3 +144,9 @@ code{color:#c9f1ff}
   .voice-actions{grid-template-columns:1fr}
   .voice-actions select{grid-column:auto}
 }
+
+/* V1.1.3 Tournant Crucial */
+.voice-console.unified{padding:20px;border-radius:22px;background:radial-gradient(circle at top right,rgba(118,247,162,.08),transparent 34%),linear-gradient(135deg,rgba(95,51,37,.82),rgba(18,14,12,.94))}
+.voice-unified-head{display:flex;justify-content:space-between;margin-bottom:14px}.voice-unified-head h2{margin:4px 0 6px}.voice-unified-head p{margin:0;color:var(--muted)}
+.auto-toggle{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}.auto-toggle input{accent-color:#76f7a2}
+.compact-list{max-height:320px}.compact-list .idea-item{padding:11px 12px}

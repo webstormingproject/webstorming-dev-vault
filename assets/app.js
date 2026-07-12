@@ -36,7 +36,7 @@ function projectNotes(id){try{return JSON.parse(localStorage.getItem(`wsNotes:${
 function saveProjectNote(id,text){text=String(text||"").trim();if(!text)return;const a=projectNotes(id);a.unshift({text,createdAt:new Date().toISOString()});localStorage.setItem(`wsNotes:${id}`,JSON.stringify(a));openProject(id)}
 function ideas(){try{return JSON.parse(localStorage.getItem("wsIdeas")||"[]")}catch{return []}}
 function addIdea(t,p,priority="Normale"){t=String(t||"").trim();if(!t)return false;const a=ideas();a.unshift({text:t,project:p,priority,createdAt:new Date().toISOString()});localStorage.setItem("wsIdeas",JSON.stringify(a));renderIdeas();return true}
-function renderIdeas(){$("#ideaList").innerHTML=ideas().map(i=>`<article class="idea-item"><div><b>${esc(i.project)}</b> <span class="badge">${esc(i.priority)}</span></div><p>${esc(i.text)}</p><small>${new Date(i.createdAt).toLocaleString("fr-FR")}</small></article>`).join("")||"<p class='muted'>Aucune idée.</p>"}
+function renderIdeas(){renderRecentIdeas();$("#ideaList").innerHTML=ideas().map(i=>`<article class="idea-item"><div><b>${esc(i.project)}</b> <span class="badge">${esc(i.priority)}</span></div><p>${esc(i.text)}</p><small>${new Date(i.createdAt).toLocaleString("fr-FR")}</small></article>`).join("")||"<p class='muted'>Aucune idée.</p>"}
 function renderMap(){$("#dependencyMap").innerHTML=projects.filter(p=>p.dependencies.length).map(p=>`<div class="dep-row"><button class="dep-main" data-open="${esc(p.id)}">${esc(p.name)}</button><span>→</span><div>${p.dependencies.map(id=>`<button class="dep-node" data-open="${esc(id)}">${esc(projects.find(x=>x.id===id)?.name||id)}</button>`).join("")}</div></div>`).join("")||"<p>Aucune dépendance définie.</p>"}
 function renderRoadmap(){const now=projects.filter(p=>p.priority==="Critique"||p.focus).slice(0,8),next=projects.filter(p=>p.priority==="Haute"&&!now.includes(p)).slice(0,8),later=projects.filter(p=>!now.includes(p)&&!next.includes(p)).slice(0,10);const h=a=>a.map(p=>`<article class="road-item"><b>${esc(p.name)}</b><span>${esc(p.next[0]||"À préciser")}</span></article>`).join("")||"<p class='muted'>Rien.</p>";$("#roadNow").innerHTML=h(now);$("#roadNext").innerHTML=h(next);$("#roadLater").innerHTML=h(later)}
 function renderDiagnostics(){diagnostics.push(["INFO","Source active",dataSource],["INFO","Projets chargés",String(projects.length)],["INFO","Notes projets","localStorage"],["INFO","Mode travail",`${projects.filter(p=>p.focus).length} projets`]);$("#diagList").innerHTML=diagnostics.map(d=>`<div class="diag-row"><span class="diag-${d[0].toLowerCase()}">${esc(d[0])}</span><b>${esc(d[1])}</b><small>${esc(d[2])}</small></div>`).join("")}
@@ -46,7 +46,6 @@ function bind(){
   ["q","cat","status"].forEach(id=>$("#"+id).addEventListener(id==="q"?"input":"change",renderProjects));
   document.addEventListener("click",e=>{const o=e.target.closest("[data-open]");if(o)openProject(o.dataset.open);const f=e.target.closest("[data-focus]");if(f){const p=projects.find(x=>x.id===f.dataset.focus);p.focus=!p.focus;renderAll()}const s=e.target.closest("[data-save-note]");if(s)saveProjectNote(s.dataset.saveNote,$("#projectNoteText").value)});
   $(".dialog-close").onclick=()=>$("#projectDialog").close();
-  $("#saveQuickIdea").onclick=()=>{const ok=addIdea($("#quickIdea").value,$("#quickProject").value);$("#ideaFeedback").textContent=ok?"Idée enregistrée.":"Écris une idée.";if(ok)$("#quickIdea").value=""};
   $("#saveIdea").onclick=()=>{if(addIdea($("#ideaText").value,$("#ideaProject").value,$("#ideaPriority").value))$("#ideaText").value=""};
   $("#exportIdeas").onclick=()=>{const b=new Blob([JSON.stringify(ideas(),null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="webstorming-ideas.json";a.click()};
   $("#clearIdeas").onclick=()=>{if(confirm("Vider toutes les idées ?")){localStorage.removeItem("wsIdeas");renderIdeas()}};
@@ -159,13 +158,13 @@ function initVoice(){
         try{
           voiceRecognition.start();
         }catch{
-          finalizeVoiceSession();
+          finalizeVoiceSession($("#voiceAutoSubmit")?.checked===true);
         }
       },250);
       return;
     }
 
-    finalizeVoiceSession();
+    finalizeVoiceSession($("#voiceAutoSubmit")?.checked===true);
   };
 
   $("#voiceGlobal").addEventListener("click",()=>{
@@ -234,10 +233,10 @@ function stopVoice(){
   }
 
   if(!voiceListening){
-    finalizeVoiceSession();
+    finalizeVoiceSession($("#voiceAutoSubmit")?.checked===true);
   }
 }
-function finalizeVoiceSession(){
+function finalizeVoiceSession(autoSend=false){
   clearTimeout(voiceRestartTimer);
   voiceListening=false;
 
@@ -411,6 +410,12 @@ function executeVoiceCommand(text){
   }
 
   return false;
+}
+
+function renderRecentIdeas(){
+  const target=$("#recentIdeas"); if(!target) return;
+  const list=ideas().slice(0,4);
+  target.innerHTML=list.map(i=>`<article class="idea-item"><div><b>${esc(i.project)}</b> <span class="badge">${esc(i.priority)}</span></div><p>${esc(i.text)}</p><small>${new Date(i.createdAt).toLocaleString("fr-FR")}</small></article>`).join("")||"<p class='muted'>Aucune idée capturée.</p>";
 }
 
 boot();
