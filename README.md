@@ -1,36 +1,31 @@
-# WebStorming OS V1.1.1 Voice Fix
+# WebStorming OS V1.1.2 Long Voice
 
-Correctif du module vocal.
+Correctif du vocal long et ajout d’actions explicites.
 
-## Problème corrigé
+## Corrigé
 
-La première version pouvait afficher **« Transcription prête »** alors qu’aucune parole n’avait réellement été reconnue.  
-Le texte d’aide était confondu avec une transcription.
+La reconnaissance vocale des navigateurs peut s’arrêter après quelques secondes de silence ou à la fin d’un segment. Cette version relance automatiquement l’écoute tant que tu n’as pas cliqué sur **Arrêter l’écoute**.
 
-## Corrections
+## Nouveau fonctionnement
 
-- la validation dépend maintenant uniquement du vrai résultat vocal ;
-- message clair lorsqu’aucune parole n’est détectée ;
-- bouton **Arrêter l’écoute** pendant l’enregistrement ;
-- arrêt automatique après 15 secondes ;
-- erreurs micro, réseau et autorisation mieux expliquées ;
-- aucune insertion si la transcription est vide ;
-- le reste du cockpit continue normalement en cas d’échec vocal.
+1. Clique sur **Parler à WebStorming**.
+2. Parle aussi longtemps que nécessaire.
+3. Clique sur **Arrêter l’écoute**.
+4. Choisis ensuite :
+   - **Insérer le texte**
+   - **Enregistrer comme idée**
+   - **Exécuter la commande**
+   - **Annuler**
 
-## Conseil navigateur
+## Important
 
-La reconnaissance vocale du Web Speech API a une disponibilité limitée selon le navigateur. Pour cette build, utiliser de préférence **Google Chrome** ou **Microsoft Edge**, puis autoriser le microphone.
-
-## Publication
-
-1. Décompresser.
-2. Remplacer les fichiers du dépôt.
-3. Faire **Commit changes** sur `main`.
-4. Attendre le déploiement vert.
-5. Recharger avec `Ctrl + F5`.
-6. Tester en disant immédiatement : « ouvre Journalia ».
+- Chrome est recommandé.
+- Edge fonctionne généralement bien.
+- Brave reste peu fiable pour `SpeechRecognition`.
+- Aucun fichier audio n’est stocké.
+- Seul le texte est conservé après ton action.
 
 ## Build
 
-- Version : 1.1.1 Voice Fix
-- Build : WS111VF
+- Version : 1.1.2 Long Voice
+- Build : WS112LV

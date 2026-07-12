@@ -127,3 +127,20 @@ code{color:#c9f1ff}
   .voice-actions{align-items:stretch}
   .voice-actions select{width:100%}
 }
+
+/* V1.1.2 Long Voice */
+.voice-actions .link-btn{white-space:nowrap}
+.voice-console[data-state="ready"]{
+  border-color:rgba(118,247,162,.38);
+  box-shadow:0 0 0 1px rgba(118,247,162,.08),0 18px 45px rgba(0,0,0,.22)
+}
+.voice-console[data-state="ready"] #voiceTranscript{color:#dfffe9}
+#voiceTranscript{line-height:1.45;max-height:130px;overflow:auto;white-space:normal}
+@media(max-width:900px){
+  .voice-actions{display:grid;grid-template-columns:1fr 1fr}
+  .voice-actions select{grid-column:1/-1}
+}
+@media(max-width:560px){
+  .voice-actions{grid-template-columns:1fr}
+  .voice-actions select{grid-column:auto}
+}

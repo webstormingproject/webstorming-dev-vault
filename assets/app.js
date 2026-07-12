@@ -53,13 +53,14 @@ function bind(){
   $("#reloadData").onclick=()=>location.reload();
 }
 
-/* === WebStorming OS V1.1.1 Voice Fix === */
+/* === WebStorming OS V1.1.2 Long Voice === */
 let voiceRecognition=null;
 let voiceFinalText="";
 let voiceInterimText="";
 let voiceListening=false;
 let voiceRequestedTarget="auto";
-let voiceStopTimer=null;
+let voiceUserStopped=true;
+let voiceRestartTimer=null;
 let voiceHadError=false;
 
 function voiceApi(){
@@ -67,6 +68,7 @@ function voiceApi(){
 }
 function initVoice(){
   const API=voiceApi();
+
   if(!API){
     setVoiceState(
       "Vocal indisponible",
@@ -80,109 +82,111 @@ function initVoice(){
 
   voiceRecognition=new API();
   voiceRecognition.lang="fr-FR";
-  voiceRecognition.continuous=false;
+  voiceRecognition.continuous=true;
   voiceRecognition.interimResults=true;
   voiceRecognition.maxAlternatives=1;
 
   voiceRecognition.onstart=()=>{
     voiceListening=true;
     voiceHadError=false;
-    voiceFinalText="";
-    voiceInterimText="";
-    clearTimeout(voiceStopTimer);
+    clearTimeout(voiceRestartTimer);
 
     $("#voiceGlobal").classList.add("listening");
     $("#voiceGlobal").setAttribute("aria-pressed","true");
     $("#voiceButtonLabel").textContent="Arrêter l’écoute";
-    $("#voiceConfirm").disabled=true;
+    setVoiceButtons(false, false);
     $("#voiceCancel").disabled=false;
 
     setVoiceState(
-      "Je t’écoute",
-      "Parle maintenant. L’écoute s’arrête automatiquement après quelques secondes.",
+      "Je t’écoute en continu",
+      currentVoiceText() || "Tu peux parler longtemps. Clique sur « Arrêter l’écoute » quand tu as terminé.",
       "listening"
     );
-
-    voiceStopTimer=setTimeout(()=>{
-      if(voiceListening) voiceRecognition.stop();
-    },15000);
   };
 
   voiceRecognition.onspeechstart=()=>{
-    setVoiceState("Voix détectée","Continue à parler…","listening");
+    setVoiceTitleOnly("Voix détectée","listening");
   };
 
   voiceRecognition.onresult=e=>{
     voiceInterimText="";
+
     for(let i=e.resultIndex;i<e.results.length;i++){
-      const transcript=e.results[i][0].transcript || "";
-      if(e.results[i].isFinal) voiceFinalText+=transcript+" ";
-      else voiceInterimText+=transcript;
+      const transcript=(e.results[i][0].transcript || "").trim();
+      if(!transcript) continue;
+
+      if(e.results[i].isFinal){
+        voiceFinalText += (voiceFinalText ? " " : "") + transcript;
+      }else{
+        voiceInterimText += (voiceInterimText ? " " : "") + transcript;
+      }
     }
 
-    const all=(voiceFinalText+voiceInterimText).trim();
-    if(all){
-      $("#voiceTranscript").textContent=all;
-      $("#voiceConfirm").disabled=false;
-    }
+    renderVoiceTranscript();
   };
 
   voiceRecognition.onerror=e=>{
-    voiceHadError=true;
-    clearTimeout(voiceStopTimer);
-
     const messages={
-      "not-allowed":"Accès au microphone refusé. Clique sur l’icône cadenas de l’adresse et autorise le micro.",
+      "not-allowed":"Accès au microphone refusé. Autorise le micro dans les réglages du site.",
       "service-not-allowed":"Le service vocal est bloqué par le navigateur.",
-      "no-speech":"Aucune parole détectée. Clique sur le micro puis parle immédiatement.",
+      "no-speech":"Aucune parole détectée. L’écoute va reprendre.",
       "audio-capture":"Aucun microphone n’est disponible.",
-      "network":"Le service de reconnaissance vocale n’a pas répondu. Essaie Chrome ou Edge.",
-      "aborted":"Écoute annulée."
+      "network":"Le service vocal a rencontré une erreur réseau.",
+      "aborted":"Écoute arrêtée."
     };
 
-    setVoiceState("Le vocal n’a pas abouti",messages[e.error]||`Erreur vocale : ${e.error}`,"error");
-    $("#voiceConfirm").disabled=true;
+    if(e.error==="no-speech"){
+      setVoiceState("Silence détecté",messages[e.error],"listening");
+      return;
+    }
+
+    if(e.error==="aborted" && voiceUserStopped){
+      return;
+    }
+
+    voiceHadError=true;
+    setVoiceState("Problème vocal",messages[e.error]||`Erreur vocale : ${e.error}`,"error");
   };
 
   voiceRecognition.onend=()=>{
-    clearTimeout(voiceStopTimer);
     voiceListening=false;
-
     $("#voiceGlobal").classList.remove("listening");
     $("#voiceGlobal").setAttribute("aria-pressed","false");
-    $("#voiceButtonLabel").textContent="Parler à WebStorming";
 
-    const actual=(voiceFinalText+voiceInterimText).trim();
-
-    if(voiceHadError) return;
-
-    if(actual){
-      $("#voiceTranscript").textContent=actual;
-      setVoiceTitleOnly("Transcription prête","ready");
-      $("#voiceConfirm").disabled=false;
-      $("#voiceCancel").disabled=false;
-    }else{
-      setVoiceState(
-        "Aucune parole détectée",
-        "Clique de nouveau puis parle immédiatement, assez près du microphone.",
-        "error"
-      );
-      $("#voiceConfirm").disabled=true;
-      $("#voiceCancel").disabled=false;
+    if(!voiceUserStopped && !voiceHadError){
+      $("#voiceButtonLabel").textContent="Reprise de l’écoute…";
+      voiceRestartTimer=setTimeout(()=>{
+        try{
+          voiceRecognition.start();
+        }catch{
+          finalizeVoiceSession();
+        }
+      },250);
+      return;
     }
+
+    finalizeVoiceSession();
   };
 
   $("#voiceGlobal").addEventListener("click",()=>{
-    if(voiceListening) stopVoice();
+    if(voiceListening || !voiceUserStopped) stopVoice();
     else startVoice("auto");
   });
-  $("#voiceConfirm").addEventListener("click",confirmVoiceText);
+
+  $("#voiceInsert").addEventListener("click",insertVoiceText);
+  $("#voiceSaveIdea").addEventListener("click",saveVoiceAsIdea);
+  $("#voiceExecute").addEventListener("click",executeVoiceText);
   $("#voiceCancel").addEventListener("click",cancelVoice);
 
   document.addEventListener("click",e=>{
     const b=e.target.closest("[data-voice-target]");
     if(b) startVoice(b.dataset.voiceTarget);
   });
+}
+function setVoiceButtons(hasText, listening){
+  $("#voiceInsert").disabled=!hasText || listening;
+  $("#voiceSaveIdea").disabled=!hasText || listening;
+  $("#voiceExecute").disabled=!hasText || listening;
 }
 function setVoiceTitleOnly(title,mode=""){
   $("#voiceState").textContent=title;
@@ -193,89 +197,164 @@ function setVoiceState(title,text,mode=""){
   $("#voiceTranscript").textContent=text;
   $(".voice-console").dataset.state=mode;
 }
+function renderVoiceTranscript(){
+  const text=currentVoiceText();
+  $("#voiceTranscript").textContent=text || "Écoute…";
+  setVoiceButtons(Boolean(text), true);
+}
 function startVoice(target="auto"){
   if(!voiceRecognition) return;
 
   voiceRequestedTarget=target;
-  const optionExists=[...$("#voiceTarget").options].some(o=>o.value===target);
-  $("#voiceTarget").value=optionExists?target:"auto";
-
+  voiceUserStopped=false;
+  voiceHadError=false;
   voiceFinalText="";
   voiceInterimText="";
-  voiceHadError=false;
-  $("#voiceConfirm").disabled=true;
+
+  const exists=[...$("#voiceTarget").options].some(o=>o.value===target);
+  $("#voiceTarget").value=exists?target:"auto";
+
+  setVoiceButtons(false, true);
+  $("#voiceCancel").disabled=false;
 
   try{
     voiceRecognition.start();
   }catch(e){
-    if(e.name==="InvalidStateError"){
-      setVoiceState("Micro déjà actif","Parle maintenant ou clique pour arrêter.","listening");
-    }else{
+    if(e.name!=="InvalidStateError"){
       setVoiceState("Impossible de démarrer",e.message,"error");
     }
   }
 }
 function stopVoice(){
-  clearTimeout(voiceStopTimer);
-  if(voiceRecognition&&voiceListening) voiceRecognition.stop();
+  voiceUserStopped=true;
+  clearTimeout(voiceRestartTimer);
+
+  if(voiceRecognition){
+    try{ voiceRecognition.stop(); }catch{}
+  }
+
+  if(!voiceListening){
+    finalizeVoiceSession();
+  }
+}
+function finalizeVoiceSession(){
+  clearTimeout(voiceRestartTimer);
+  voiceListening=false;
+
+  $("#voiceGlobal").classList.remove("listening");
+  $("#voiceGlobal").setAttribute("aria-pressed","false");
+  $("#voiceButtonLabel").textContent="Parler à WebStorming";
+
+  const text=currentVoiceText();
+
+  if(text){
+    $("#voiceTranscript").textContent=text;
+    setVoiceTitleOnly("Texte prêt","ready");
+    setVoiceButtons(true, false);
+    $("#voiceCancel").disabled=false;
+  }else if(!voiceHadError){
+    setVoiceState(
+      "Aucun texte reconnu",
+      "Clique sur le micro et parle immédiatement. Utilise Chrome ou Edge.",
+      "error"
+    );
+    setVoiceButtons(false, false);
+    $("#voiceCancel").disabled=false;
+  }
 }
 function cancelVoice(){
-  clearTimeout(voiceStopTimer);
-  if(voiceRecognition&&voiceListening){
-    try{voiceRecognition.abort()}catch{}
+  voiceUserStopped=true;
+  clearTimeout(voiceRestartTimer);
+
+  if(voiceRecognition){
+    try{ voiceRecognition.abort(); }catch{}
   }
+
   voiceFinalText="";
   voiceInterimText="";
   voiceHadError=false;
-  $("#voiceConfirm").disabled=true;
+
+  setVoiceButtons(false, false);
   $("#voiceCancel").disabled=true;
   setVoiceState("Micro en attente","La transcription apparaîtra ici.","");
 }
 function currentVoiceText(){
-  return (voiceFinalText+voiceInterimText).trim();
+  return [voiceFinalText.trim(),voiceInterimText.trim()].filter(Boolean).join(" ").trim();
 }
-function confirmVoiceText(){
+function selectedVoiceTarget(){
+  const selected=$("#voiceTarget").value;
+  return selected==="auto"?voiceRequestedTarget:selected;
+}
+function insertVoiceText(){
   const text=currentVoiceText();
-  if(!text){
-    setVoiceState("Aucun texte à utiliser","Refais une dictée puis confirme.","error");
+  if(!text) return;
+
+  const target=selectedVoiceTarget()==="auto" ? "quickIdea" : selectedVoiceTarget();
+  writeVoiceTo(target,text);
+  cancelVoice();
+}
+function saveVoiceAsIdea(){
+  const text=currentVoiceText();
+  if(!text) return;
+
+  const p=findProjectByVoice(text);
+  const project=p?.name || ($("#quickProject")?.value || "Général");
+
+  addIdea(text,project,"Normale");
+  showView("ideas");
+  cancelVoice();
+}
+function executeVoiceText(){
+  const text=currentVoiceText();
+  if(!text) return;
+
+  if(executeVoiceCommand(text)){
+    cancelVoice();
     return;
   }
 
-  const target=$("#voiceTarget").value==="auto"?voiceRequestedTarget:$("#voiceTarget").value;
-
-  if(target==="auto"){
-    if(executeVoiceCommand(text)){
-      cancelVoice();
-      return;
-    }
-    writeVoiceTo("quickIdea",text);
-  }else{
-    writeVoiceTo(target,text);
-  }
-  cancelVoice();
+  setVoiceState(
+    "Commande non reconnue",
+    "Le texte est conservé. Tu peux l’insérer ou l’enregistrer comme idée.",
+    "error"
+  );
 }
 function writeVoiceTo(target,text){
   const el=document.getElementById(target);
+
   if(!el){
-    setVoiceState("Destination indisponible","Ouvre d’abord la fiche du projet concerné.","error");
+    setVoiceState(
+      "Destination indisponible",
+      "Ouvre d’abord la fiche ou choisis une autre destination.",
+      "error"
+    );
     return;
   }
+
   el.value=(el.value?el.value.trim()+" ":"")+text.trim();
   el.dispatchEvent(new Event("input",{bubbles:true}));
   el.focus();
+
   if(target==="q"){
     showView("projects");
     renderProjects();
   }
 }
 function normalizeVoice(s){
-  return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[’']/g," ").replace(/\s+/g," ").trim();
+  return s.toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .replace(/[’']/g," ")
+    .replace(/\s+/g," ")
+    .trim();
 }
 function findProjectByVoice(text){
   const n=normalizeVoice(text);
+
   return projects.find(p=>{
     const name=normalizeVoice(p.name);
-    return n.includes(name) || name.split(" ").filter(x=>x.length>3).some(x=>n.includes(x));
+    return n.includes(name) ||
+      name.split(" ").filter(x=>x.length>3).some(x=>n.includes(x));
   });
 }
 function executeVoiceCommand(text){
@@ -286,18 +365,21 @@ function executeVoiceCommand(text){
     openProject(p.id);
     return true;
   }
+
   if(/(ajoute|mettre|mets).*(focus|mode travail)/.test(n) && p){
     p.focus=true;
     renderAll();
     showView("work");
     return true;
   }
+
   if(/(retire|enleve|supprime).*(focus|mode travail)/.test(n) && p){
     p.focus=false;
     renderAll();
     showView("work");
     return true;
   }
+
   if(/^(cherche|recherche|trouve)\b/.test(n)){
     const query=text.replace(/^(cherche|recherche|trouve)\s*/i,"").trim();
     $("#q").value=query;
@@ -305,21 +387,29 @@ function executeVoiceCommand(text){
     renderProjects();
     return true;
   }
+
   if(/(commence|demarre|ouvre).*(journee|mode travail)/.test(n)){
     showView("work");
     return true;
   }
+
   if(/(nouvelle idee|ajoute une idee|note une idee)/.test(n)){
-    const cleaned=text.replace(/.*?(nouvelle idée|ajoute une idée|note une idée)\s*(pour|sur)?\s*/i,"").trim();
+    const cleaned=text
+      .replace(/.*?(nouvelle idée|ajoute une idée|note une idée)\s*(pour|sur)?\s*/i,"")
+      .trim();
+
     const project=p?.name||"Général";
     if(cleaned) addIdea(cleaned,project,"Normale");
+
     showView("ideas");
     return true;
   }
+
   if(/(montre|affiche).*(priorites|roadmap)/.test(n)){
     showView("roadmap");
     return true;
   }
+
   return false;
 }
 
