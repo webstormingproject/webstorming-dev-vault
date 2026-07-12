@@ -1,7 +1,7 @@
 {
   "name": "WebStorming OS",
   "short_name": "WebStorming",
-  "description": "WebStorming OS V1.1.4 Boot Fix",
+  "description": "WebStorming OS V1.1.5 Boot Guard Fix",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

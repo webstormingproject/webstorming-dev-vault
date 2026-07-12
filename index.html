@@ -4,18 +4,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#151010" />
-  <meta name="description" content="WebStorming OS V1.1.4 Boot Fix" />
-  <title>WebStorming OS V1.1.4 — Boot Fix</title>
+  <meta name="description" content="WebStorming OS V1.1.5 Boot Guard Fix" />
+  <title>WebStorming OS V1.1.5 — Boot Guard Fix</title>
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" href="./assets/icons/icon.svg" type="image/svg+xml" />
   <link rel="stylesheet" href="./assets/css/app.css" data-ws-required="css" />
   <script>
     window.WEBSTORMING_OS_CONFIG = {
-      version: '1.1.4',
-      releaseName: 'Boot Fix',
+      version: '1.1.5',
+      releaseName: 'Boot Guard Fix',
       expectedBase: '/webstorming-dev-vault/',
-      bootTimeoutMs: 8000,
-      bootHardTimeoutMs: 15000,
+      bootTimeoutMs: 12000,
+      bootHardTimeoutMs: 30000,
       requiredAssets: [
         './assets/css/app.css',
         './assets/js/boot-guard.js',
@@ -38,13 +38,13 @@
   <main id="ws-root" class="ws-root" aria-live="polite">
     <section id="ws-loader" class="ws-loader">
       <div class="ws-pulse" aria-hidden="true"></div>
-      <h1>Initialisation de WebStorming OS v1.1.4...</h1>
+      <h1>Initialisation de WebStorming OS v1.1.5...</h1>
       <p id="ws-loader-status">Chargement du moteur PWA sécurisé.</p>
       <div class="ws-progress" aria-hidden="true"><span></span></div>
     </section>
   </main>
 
-  <section id="ws-boot-panel" class="ws-boot-panel" hidden>
+  <section id="ws-boot-panel" class="ws-boot-panel is-hidden" hidden style="display:none">
     <div class="ws-boot-card">
       <h2>Diagnostic de démarrage</h2>
       <p id="ws-boot-summary">Le démarrage prend trop longtemps.</p>

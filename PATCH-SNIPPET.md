@@ -1,48 +1,40 @@
-# Patch snippet — WebStorming OS V1.1.4 Boot Fix
+# Patch V1.1.5 — Boot Guard Fix à fusionner dans une app existante
 
-Si tu veux corriger l'application existante sans remplacer toute l'interface, applique ces points :
+## 1. CSS obligatoire
 
-1. Copier `assets/js/boot-guard.js` dans le projet.
-2. Charger `boot-guard.js` avant le script principal :
+Ajouter dans le CSS global :
+
+```css
+[hidden],
+.ws-boot-panel[hidden],
+.ws-boot-panel.is-hidden {
+  display: none !important;
+}
+.ws-boot-panel.is-visible {
+  display: grid !important;
+}
+```
+
+## 2. HTML du panneau diagnostic
+
+Le panneau doit démarrer ainsi :
 
 ```html
-<script>
-window.WEBSTORMING_OS_CONFIG = {
-  version: '1.1.4',
-  releaseName: 'Boot Fix',
-  expectedBase: '/webstorming-dev-vault/',
-  bootTimeoutMs: 8000,
-  bootHardTimeoutMs: 15000,
-  requiredAssets: [
-    './assets/css/app.css',
-    './assets/js/boot-guard.js',
-    './assets/js/app.js',
-    './manifest.webmanifest'
-  ]
-};
-</script>
-<script defer src="./assets/js/boot-guard.js"></script>
-<script defer src="./assets/js/app.js"></script>
+<section id="ws-boot-panel" class="ws-boot-panel is-hidden" hidden style="display:none">
 ```
 
-3. Remplacer les chemins absolus `/assets/...` par `./assets/...`, ou configurer Vite :
+## 3. Quand l'app est prête
+
+Après rendu complet de l'interface :
 
 ```js
-export default defineConfig({ base: '/webstorming-dev-vault/' });
+document.body.dataset.wsReady = '1';
+window.dispatchEvent(new CustomEvent('webstorming:app-ready', {
+  detail: { message: 'Application prête.' }
+}));
+window.WebStormingBootFix?.finish('Application prête.');
 ```
 
-4. Remplacer temporairement le service worker par `sw.js` V1.1.4 pour purger les anciens caches.
+## 4. Ne jamais laisser le boot guard afficher un faux blocage
 
-5. Dans le script principal, appeler à la fin du démarrage :
-
-```js
-window.WebStormingBootFix?.finish('Interface prête.');
-```
-
-6. Si une erreur bloque l'application :
-
-```js
-window.WebStormingBootFix?.fail('Erreur boot', error);
-```
-
-Règle Journalia/WebStorming : jamais d'écran d'initialisation bloqué sans diagnostic visible.
+Si `.ws-app` ou `[data-ws-app-ready="1"]` existe, le boot guard doit considérer que l'app est prête et fermer le diagnostic.

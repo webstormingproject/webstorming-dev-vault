@@ -1,6 +1,6 @@
-/* WebStorming OS V1.1.4 — Boot Fix service worker
+/* WebStorming OS V1.1.5 — Boot Guard Fix service worker
    Strategy: network-first + old cache purge. Prevents stale broken boot. */
-const WS_VERSION = 'webstorming-os-v1.1.4-boot-fix';
+const WS_VERSION = 'webstorming-os-v1.1.5-boot-fix';
 const KEEP = new Set([WS_VERSION]);
 self.addEventListener('install', (event) => {
   self.skipWaiting();

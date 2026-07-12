@@ -1,53 +1,39 @@
-# WebStorming OS V1.1.4 — Boot Fix
+# WebStorming OS V1.1.5 — Boot Guard Fix
 
-## Objectif
+## Correction principale
 
-Corriger le blocage observé sur GitHub Pages :
+La V1.1.4 a prouvé que tous les fichiers chargeaient correctement en HTTP 200.
+Le problème restant était le garde de démarrage : le panneau `Diagnostic de démarrage` pouvait rester visible même quand l'interface était prête, car le CSS `.ws-boot-panel { display:grid }` annulait l'attribut HTML `hidden`.
 
-```text
-Initialisation de WebStorming OS v1.0...
-```
+La V1.1.5 corrige cela :
 
-Cette V1.1.4 ajoute :
+- `[hidden]` forcé en `display:none !important` ;
+- fermeture robuste du panneau diagnostic ;
+- timers boot soft/hard nettoyés quand l'app est prête ;
+- signal `webstorming:app-ready` ;
+- détection visuelle `.ws-app` en secours ;
+- timeout soft augmenté à 12 secondes ;
+- timeout hard augmenté à 30 secondes ;
+- panneau démarrage initialement en `style="display:none"`.
 
-- chemins relatifs compatibles GitHub Pages ;
-- boot guard anti-écran figé ;
-- diagnostic visible après 8 secondes ;
-- page `diagnose.html` ;
-- service worker qui purge les anciens caches ;
-- bouton pour vider cache/service workers ;
-- manifest PWA propre.
-
-## Installation rapide GitHub Pages
+## Installation GitHub Pages
 
 1. Dézipper l'archive.
-2. Envoyer le contenu du dossier `webstorming-os-v1.1.4-boot-fix/` à la racine du dépôt GitHub Pages `webstorming-dev-vault`.
+2. Envoyer le contenu du dossier `webstorming-os-v1.1.5-boot-guard-fix/` à la racine du dépôt GitHub Pages `webstorming-dev-vault`.
 3. Commit + push.
 4. Ouvrir :
-
-```text
-https://webstormingproject.github.io/webstorming-dev-vault/
-```
-
-5. Ouvrir aussi :
 
 ```text
 https://webstormingproject.github.io/webstorming-dev-vault/diagnose.html
 ```
 
-## Test conseillé après déploiement
+5. Cliquer sur `Vider cache + service workers`.
+6. Revenir à :
 
-Dans Chrome :
+```text
+https://webstormingproject.github.io/webstorming-dev-vault/
+```
 
-1. Ouvrir la page.
-2. Faire `Ctrl + F5`.
-3. Si l'ancienne version reste bloquée, ouvrir `diagnose.html`.
-4. Cliquer `Vider cache + service workers`.
-5. Revenir sur `index.html`.
+## Résultat attendu
 
-## Attention
-
-Ce ZIP est un micro-rush de **Boot Fix**. Il sécurise le démarrage et donne un socle fonctionnel.
-Il ne contient pas forcément tous les modules métier de l'ancienne WebStorming OS, car le code source complet de cette app n'était pas disponible dans cette session.
-
-Pour fusionner avec l'ancienne app, suivre `PATCH-SNIPPET.md`.
+L'interface doit s'afficher sans panneau rouge. Si une vraie erreur JS survient, le diagnostic s'affiche avec la cause.

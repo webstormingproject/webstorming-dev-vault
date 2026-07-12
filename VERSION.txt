@@ -1,4 +1,3 @@
-WebStorming OS V1.1.4 — Boot Fix
-Build: 2026-07-12
-Type: GitHub Pages / PWA boot hotfix
-Target path: /webstorming-dev-vault/
+WebStorming OS V1.1.5 — Boot Guard Fix
+Date: 2026-07-12
+Objet: correction du panneau diagnostic qui restait visible malgré l'interface chargée.

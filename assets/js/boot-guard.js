@@ -4,6 +4,8 @@
   var log = [];
   var finished = false;
   var startedAt = Date.now();
+  var softTimer = null;
+  var hardTimer = null;
 
   function now() { return new Date().toISOString().replace('T', ' ').replace('Z', ''); }
   function push(type, message, detail) {
@@ -23,6 +25,35 @@
     var ok = path.indexOf(expected) === 0 || path === expected.replace(/\/$/, '') || expected === '/';
     return { path: path, expected: expected, ok: ok };
   }
+  function showPanel(panel) {
+    if (!panel) return;
+    showPanel(panel);
+    panel.removeAttribute('hidden');
+    panel.classList.remove('is-hidden');
+    panel.classList.add('is-visible');
+    panel.style.display = 'grid';
+  }
+  function hidePanel(panel) {
+    if (!panel) return;
+    panel.hidden = true;
+    panel.setAttribute('hidden', 'hidden');
+    panel.classList.remove('is-visible');
+    panel.classList.add('is-hidden');
+    panel.style.display = 'none';
+  }
+  function clearBootTimers() {
+    if (softTimer) { clearTimeout(softTimer); softTimer = null; }
+    if (hardTimer) { clearTimeout(hardTimer); hardTimer = null; }
+  }
+  function isAppVisiblyReady() {
+    try {
+      if (document.body && document.body.dataset && document.body.dataset.wsReady === '1') return true;
+      if (document.querySelector('.ws-app')) return true;
+      if (document.querySelector('[data-ws-app-ready="1"]')) return true;
+      if (document.querySelector('.app, #app, .dashboard, .shell, .ws-dashboard')) return true;
+    } catch (_) {}
+    return false;
+  }
   function renderPanel(summary) {
     var panel = $('ws-boot-panel');
     var summaryEl = $('ws-boot-summary');
@@ -41,7 +72,7 @@
     });
     summaryEl.textContent = summary || 'Le démarrage a été interrompu ou ralenti.';
     logEl.textContent = lines.join('\n');
-    panel.hidden = false;
+    showPanel(panel);
   }
   function safeJson(value) {
     try { return typeof value === 'string' ? value : JSON.stringify(value); } catch (_) { return String(value); }
@@ -84,13 +115,19 @@
   }
   function finish(message) {
     finished = true;
+    clearBootTimers();
     setStatus(message || 'Interface prête.');
     var panel = $('ws-boot-panel');
-    if (panel) panel.hidden = true;
+    hidePanel(panel);
+    try {
+      if (document.body && document.body.dataset) document.body.dataset.wsReady = '1';
+      window.dispatchEvent(new CustomEvent('webstorming:boot-ready', { detail: { message: message || 'Interface prête.' } }));
+    } catch (_) {}
     push('info', 'Boot terminé');
   }
   function fail(message, detail) {
     finished = true;
+    clearBootTimers();
     push('error', message || 'Boot interrompu', detail || null);
     renderPanel(message || 'Erreur pendant le démarrage.');
   }
@@ -113,22 +150,33 @@
     push('error', 'Promesse rejetée: ' + (reason.message || reason), reason.stack || null);
     if (!finished) renderPanel('Erreur asynchrone pendant le démarrage.');
   });
+  window.addEventListener('webstorming:app-ready', function (event) {
+    finish(event && event.detail && event.detail.message ? event.detail.message : 'Application prête.');
+  });
   document.addEventListener('DOMContentLoaded', function () {
     registerButtons();
     var base = getBaseInfo();
     push('info', 'DOM prêt');
     push(base.ok ? 'info' : 'warn', 'Base path détectée: ' + base.path + ' / attendue: ' + base.expected);
-    setTimeout(function () {
-      if (!finished) {
-        push('warn', 'Boot supérieur à ' + ((cfg.bootTimeoutMs || 8000) / 1000) + 's');
-        renderPanel('Le démarrage prend trop longtemps. Le diagnostic est affiché pour éviter un écran figé.');
+    softTimer = setTimeout(function () {
+      if (finished) return;
+      if (isAppVisiblyReady()) {
+        push('info', 'Interface détectée visuellement prête avant diagnostic soft-timeout');
+        finish('Interface prête — détection visuelle.');
+        return;
       }
-    }, cfg.bootTimeoutMs || 8000);
-    setTimeout(function () {
-      if (!finished) {
-        fail('Boot hard timeout: l’application n’a pas confirmé son démarrage.', null);
+      push('warn', 'Boot supérieur à ' + ((cfg.bootTimeoutMs || 12000) / 1000) + 's');
+      renderPanel('Le démarrage prend trop longtemps. Le diagnostic est affiché pour éviter un écran figé.');
+    }, cfg.bootTimeoutMs || 12000);
+    hardTimer = setTimeout(function () {
+      if (finished) return;
+      if (isAppVisiblyReady()) {
+        push('info', 'Interface détectée visuellement prête avant hard-timeout');
+        finish('Interface prête — détection visuelle.');
+        return;
       }
-    }, cfg.bootHardTimeoutMs || 15000);
+      fail('Boot hard timeout: l’application n’a pas confirmé son démarrage.', null);
+    }, cfg.bootHardTimeoutMs || 30000);
   });
   window.WebStormingBootFix = {
     log: push,
