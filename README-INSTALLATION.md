@@ -1,39 +1,50 @@
-# WebStorming OS V1.1.5 — Boot Guard Fix
+# WebStorming OS V1.2.0 — Cockpit Core FR
 
-## Correction principale
+## Objectif
 
-La V1.1.4 a prouvé que tous les fichiers chargeaient correctement en HTTP 200.
-Le problème restant était le garde de démarrage : le panneau `Diagnostic de démarrage` pouvait rester visible même quand l'interface était prête, car le CSS `.ws-boot-panel { display:grid }` annulait l'attribut HTML `hidden`.
-
-La V1.1.5 corrige cela :
-
-- `[hidden]` forcé en `display:none !important` ;
-- fermeture robuste du panneau diagnostic ;
-- timers boot soft/hard nettoyés quand l'app est prête ;
-- signal `webstorming:app-ready` ;
-- détection visuelle `.ws-app` en secours ;
-- timeout soft augmenté à 12 secondes ;
-- timeout hard augmenté à 30 secondes ;
-- panneau démarrage initialement en `style="display:none"`.
+Première version du cockpit français de pilotage global des développements : projets, fournisseurs IA, modèles, capacités, routage, missions et mémoire locale.
 
 ## Installation GitHub Pages
 
-1. Dézipper l'archive.
-2. Envoyer le contenu du dossier `webstorming-os-v1.1.5-boot-guard-fix/` à la racine du dépôt GitHub Pages `webstorming-dev-vault`.
-3. Commit + push.
-4. Ouvrir :
-
-```text
-https://webstormingproject.github.io/webstorming-dev-vault/diagnose.html
-```
-
-5. Cliquer sur `Vider cache + service workers`.
-6. Revenir à :
+1. Dézipper `webstorming-os-v1.2.0-cockpit-core-fr.zip`.
+2. Envoyer tout le contenu du dossier à la racine du dépôt GitHub Pages, par exemple `webstorming-dev-vault`.
+3. Vérifier que `.nojekyll` est bien présent.
+4. Commit / push.
+5. Ouvrir :
 
 ```text
 https://webstormingproject.github.io/webstorming-dev-vault/
 ```
 
-## Résultat attendu
+6. En cas de souci :
 
-L'interface doit s'afficher sans panneau rouge. Si une vraie erreur JS survient, le diagnostic s'affiche avec la cause.
+```text
+https://webstormingproject.github.io/webstorming-dev-vault/diagnose.html
+```
+
+## Important sécurité
+
+Cette V1.2.0 est volontairement un cockpit front/PWA. Elle prépare le gestionnaire API & modèles mais ne doit pas recevoir de clés API de production.
+
+Les vraies clés doivent être stockées dans une phase suivante :
+
+- backend WordPress sécurisé ; ou
+- backend local sécurisé ; ou
+- service API privé avec chiffrement.
+
+## Modules inclus
+
+- Dashboard global.
+- Project Launcher.
+- API & Model Manager skeleton.
+- Modèles et capacités.
+- Smart Router par capacité.
+- Mission Builder.
+- Export/import JSON.
+- Mémoire locale navigateur.
+- Boot Guard anti écran bloqué.
+- Diagnostic complet.
+
+## Prochaine étape recommandée
+
+V1.2.1 : backend sécurisé minimal ou connecteur WordPress pour tester les clés sans jamais les exposer au navigateur.

@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#151010" />
-  <meta name="description" content="WebStorming OS V1.1.5 Boot Guard Fix" />
-  <title>WebStorming OS V1.1.5 — Boot Guard Fix</title>
+  <meta name="theme-color" content="#15100f" />
+  <meta name="description" content="WebStorming OS V1.2.0 — Cockpit FR de pilotage global développement multi-IA" />
+  <title>WebStorming OS V1.2.0 — Cockpit FR</title>
   <link rel="manifest" href="./manifest.webmanifest" />
   <link rel="icon" href="./assets/icons/icon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="./assets/css/app.css" data-ws-required="css" />
+  <link rel="stylesheet" href="./assets/css/app.css" />
   <script>
     window.WEBSTORMING_OS_CONFIG = {
-      version: '1.1.5',
-      releaseName: 'Boot Guard Fix',
+      version: '1.2.0',
+      releaseName: 'Cockpit Core FR',
       expectedBase: '/webstorming-dev-vault/',
-      bootTimeoutMs: 12000,
-      bootHardTimeoutMs: 30000,
+      bootTimeoutMs: 9000,
+      hardBootTimeoutMs: 25000,
       requiredAssets: [
         './assets/css/app.css',
         './assets/js/boot-guard.js',
@@ -24,35 +24,37 @@
       ]
     };
   </script>
-  <script defer src="./assets/js/boot-guard.js" data-ws-required="js"></script>
-  <script defer src="./assets/js/app.js" data-ws-required="js"></script>
+  <script defer src="./assets/js/boot-guard.js"></script>
+  <script defer src="./assets/js/app.js"></script>
 </head>
 <body>
   <noscript>
-    <div class="ws-noscript">
+    <div class="noscript-panel">
       <h1>JavaScript est désactivé</h1>
-      <p>WebStorming OS a besoin de JavaScript pour démarrer.</p>
+      <p>WebStorming OS a besoin de JavaScript pour fonctionner.</p>
     </div>
   </noscript>
 
-  <main id="ws-root" class="ws-root" aria-live="polite">
-    <section id="ws-loader" class="ws-loader">
-      <div class="ws-pulse" aria-hidden="true"></div>
-      <h1>Initialisation de WebStorming OS v1.1.5...</h1>
-      <p id="ws-loader-status">Chargement du moteur PWA sécurisé.</p>
-      <div class="ws-progress" aria-hidden="true"><span></span></div>
+  <main id="ws-root" class="app-shell" aria-live="polite">
+    <section id="ws-loader" class="boot-screen">
+      <div class="orb" aria-hidden="true"></div>
+      <p class="eyebrow">WebStorming OS</p>
+      <h1>Initialisation du Cockpit FR v1.2.0...</h1>
+      <p id="ws-loader-status">Chargement du moteur de pilotage global.</p>
+      <div class="progress"><span></span></div>
     </section>
   </main>
 
-  <section id="ws-boot-panel" class="ws-boot-panel is-hidden" hidden style="display:none">
-    <div class="ws-boot-card">
-      <h2>Diagnostic de démarrage</h2>
-      <p id="ws-boot-summary">Le démarrage prend trop longtemps.</p>
+  <section id="ws-boot-panel" class="boot-panel is-hidden" hidden style="display:none">
+    <div class="boot-card">
+      <p class="eyebrow">Diagnostic</p>
+      <h2>Démarrage incomplet</h2>
+      <p id="ws-boot-summary">Le cockpit n’a pas terminé son initialisation.</p>
       <pre id="ws-boot-log"></pre>
-      <div class="ws-actions">
+      <div class="button-row">
         <button type="button" id="ws-retry">Réessayer</button>
         <button type="button" id="ws-clear-cache">Vider cache PWA</button>
-        <a href="./diagnose.html">Diagnostic complet</a>
+        <a class="button ghost" href="./diagnose.html">Diagnostic complet</a>
       </div>
     </div>
   </section>

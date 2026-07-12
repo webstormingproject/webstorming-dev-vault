@@ -1,6 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="112" fill="#160f0e"/>
-  <circle cx="256" cy="256" r="182" fill="none" stroke="#fff" stroke-width="28"/>
-  <path d="M160 162v182c0 24 17 40 41 40h64c57 0 91-35 91-89V162h-46v132c0 31-17 51-45 51h-47c-8 0-12-5-12-13V162h-46Z" fill="#fff"/>
-  <path d="M236 162v142h43V162h-43Z" fill="#d6a568"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="WebStorming OS">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F5D7A1"/>
+      <stop offset="0.48" stop-color="#A66A46"/>
+      <stop offset="1" stop-color="#17100F"/>
+    </linearGradient>
+    <filter id="s" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="24" flood-color="#000" flood-opacity=".45"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#120D0C"/>
+  <circle cx="256" cy="256" r="182" fill="url(#g)" filter="url(#s)"/>
+  <path d="M138 286c35-94 87-141 155-141 42 0 75 16 99 47-35-10-70-7-103 10 35 8 63 26 86 55-54-25-102-24-144 2 39 15 69 38 91 70-77-42-138-38-184 13 2-20 9-39 20-56z" fill="#130C0B" opacity=".92"/>
+  <circle cx="327" cy="170" r="17" fill="#F8E8C9"/>
 </svg>

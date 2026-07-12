@@ -1,3 +1,4 @@
-WebStorming OS V1.1.5 — Boot Guard Fix
+WebStorming OS V1.2.0 — Cockpit Core FR
 Date: 2026-07-12
-Objet: correction du panneau diagnostic qui restait visible malgré l'interface chargée.
+Type: Static PWA / GitHub Pages ready
+Modules: Dashboard, Project Launcher, API & Model Manager skeleton, Smart Router, Mission Builder, Project Memory, Export/Import JSON, Boot Guard, Diagnose page

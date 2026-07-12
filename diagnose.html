@@ -3,58 +3,43 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Diagnostic — WebStorming OS V1.1.5</title>
+  <meta name="theme-color" content="#15100f" />
+  <title>Diagnostic — WebStorming OS V1.2.0</title>
   <link rel="stylesheet" href="./assets/css/app.css" />
 </head>
 <body>
-  <main class="ws-root">
-    <section class="ws-app">
-      <header class="ws-hero">
-        <div>
-          <div class="ws-kicker">Diagnostic</div>
-          <h1>WebStorming OS V1.1.5</h1>
-          <p>Contrôle des chemins, assets, manifest, service worker et cache PWA.</p>
-        </div>
-        <div class="ws-badge" id="global-status">EN COURS</div>
-      </header>
-      <div class="ws-grid" id="diagnostic-grid"></div>
-      <div class="ws-actions">
-        <a href="./index.html">Retour app</a>
-        <button id="clear-cache">Vider cache + service workers</button>
+  <main class="main" style="max-width:1100px;margin:0 auto">
+    <section class="topbar" style="margin-top:1rem">
+      <div>
+        <p class="eyebrow">Diagnostic PWA</p>
+        <h1>WebStorming OS V1.2.0</h1>
+        <p>Teste les fichiers essentiels, le service worker, le cache et le stockage local.</p>
       </div>
+      <div class="top-actions"><a class="button primary" href="./index.html">Retour cockpit</a><button class="danger" id="purge">Purger cache</button></div>
+    </section>
+    <section class="card">
+      <h2>Résultats</h2>
+      <div id="results" class="list"></div>
     </section>
   </main>
   <script>
-    const assets = ['./index.html','./assets/css/app.css','./assets/js/boot-guard.js','./assets/js/app.js','./manifest.webmanifest','./sw.js'];
-    const grid = document.getElementById('diagnostic-grid');
-    const status = document.getElementById('global-status');
-    function esc(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
-    function add(title, text){ const el=document.createElement('article'); el.className='ws-card'; el.innerHTML='<h3>'+esc(title)+'</h3><p>'+esc(text)+'</p>'; grid.appendChild(el); return el; }
-    async function run(){
-      let ok = true;
-      add('URL', location.href);
-      add('Path', location.pathname);
-      for (const asset of assets) {
-        try {
-          const res = await fetch(asset + '?diag=' + Date.now(), { cache: 'no-store' });
-          if (!res.ok) ok = false;
-          add(asset, 'HTTP ' + res.status + ' — ' + (res.ok ? 'OK' : 'ERREUR'));
-        } catch (err) {
-          ok = false; add(asset, 'FETCH FAILED — ' + (err.message || err));
-        }
-      }
-      if ('serviceWorker' in navigator) {
-        const regs = await navigator.serviceWorker.getRegistrations();
-        add('Service workers', regs.length + ' registration(s) active(s)');
-      } else add('Service workers', 'non supportés');
-      if ('caches' in window) {
-        const keys = await caches.keys();
-        add('Caches', keys.length ? keys.join(', ') : 'aucun cache');
-      } else add('Caches', 'non supportés');
-      status.textContent = ok ? 'OK' : 'À CORRIGER';
-      if (!ok) status.style.color = '#ff6b6b';
+    const files = ['./index.html','./assets/css/app.css','./assets/js/boot-guard.js','./assets/js/app.js','./manifest.webmanifest','./sw.js','./assets/icons/icon.svg'];
+    const out = document.getElementById('results');
+    function item(label, ok, detail) {
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.innerHTML = `<div class="item-header"><h3>${label}</h3><span class="badge ${ok ? 'green' : 'red'}">${ok ? 'OK' : 'ERREUR'}</span></div><p>${detail || ''}</p>`;
+      out.appendChild(div);
     }
-    document.getElementById('clear-cache').addEventListener('click', async () => {
+    (async () => {
+      for (const f of files) {
+        try { const r = await fetch(f, {cache:'no-store'}); item(f, r.ok, `HTTP ${r.status}`); }
+        catch (e) { item(f, false, e.message); }
+      }
+      item('Service Worker', 'serviceWorker' in navigator, 'Support navigateur : ' + ('serviceWorker' in navigator));
+      item('LocalStorage', (() => { try { localStorage.setItem('__ws_test','1'); localStorage.removeItem('__ws_test'); return true; } catch(e) { return false; } })(), 'Stockage local navigateur');
+    })();
+    document.getElementById('purge').addEventListener('click', async () => {
       if ('serviceWorker' in navigator) {
         const regs = await navigator.serviceWorker.getRegistrations();
         await Promise.all(regs.map(r => r.unregister()));
@@ -63,9 +48,10 @@
         const keys = await caches.keys();
         await Promise.all(keys.map(k => caches.delete(k)));
       }
-      location.reload();
+      localStorage.removeItem('webstorming-os-cockpit-v120');
+      alert('Cache/service worker/mémoire locale purgés.');
+      location.href = './index.html';
     });
-    run();
   </script>
 </body>
 </html>

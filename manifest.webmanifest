@@ -1,16 +1,17 @@
 {
-  "name": "WebStorming OS",
-  "short_name": "WebStorming",
-  "description": "WebStorming OS V1.1.5 Boot Guard Fix",
+  "name": "WebStorming OS — Cockpit FR",
+  "short_name": "WS Cockpit",
+  "description": "Cockpit français de pilotage global des développements multi-IA.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#160f0e",
-  "theme_color": "#151010",
+  "background_color": "#15100f",
+  "theme_color": "#15100f",
+  "orientation": "any",
   "icons": [
     {
       "src": "./assets/icons/icon.svg",
-      "sizes": "any",
+      "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     }
