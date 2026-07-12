@@ -1,132 +1,60 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#160e0b">
-<title>WebStorming OS V1.1.3 Tournant Crucial</title>
-<link rel="stylesheet" href="assets/style.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#151010" />
+  <meta name="description" content="WebStorming OS V1.1.4 Boot Fix" />
+  <title>WebStorming OS V1.1.4 — Boot Fix</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./assets/icons/icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="./assets/css/app.css" data-ws-required="css" />
+  <script>
+    window.WEBSTORMING_OS_CONFIG = {
+      version: '1.1.4',
+      releaseName: 'Boot Fix',
+      expectedBase: '/webstorming-dev-vault/',
+      bootTimeoutMs: 8000,
+      bootHardTimeoutMs: 15000,
+      requiredAssets: [
+        './assets/css/app.css',
+        './assets/js/boot-guard.js',
+        './assets/js/app.js',
+        './manifest.webmanifest'
+      ]
+    };
+  </script>
+  <script defer src="./assets/js/boot-guard.js" data-ws-required="js"></script>
+  <script defer src="./assets/js/app.js" data-ws-required="js"></script>
 </head>
 <body>
-<div id="boot" class="boot">Initialisation de WebStorming OS V1.0…</div>
-<main id="app" class="wrap hidden">
-<header class="topbar">
-  <div>
-    <div class="kicker">WEBSTORMING OS · V1.1.3 TOURNANT CRUCIAL</div>
-    <h1>Ton système d’exploitation de production</h1>
-    <p class="subtitle">Projets, mémoire, GitHub, dépendances et mode travail dans un seul cockpit.</p>
-  </div>
-  <div class="clock"><span id="today"></span><b id="time"></b><small>Build WS113TC</small></div>
-</header>
-
-<nav class="tabs">
-  <button class="tab active" data-view="dashboard">Accueil</button>
-  <button class="tab" data-view="work">Mode travail</button>
-  <button class="tab" data-view="projects">Projets</button>
-  <button class="tab" data-view="ideas">Idées</button>
-  <button class="tab" data-view="map">Dépendances</button>
-  <button class="tab" data-view="roadmap">Roadmap</button>
-  <button class="tab" data-view="diagnostics">Diagnostic</button>
-</nav>
-
-<section class="voice-console unified" aria-label="Assistant vocal WebStorming"><div class="voice-unified-head"><div><span class="eyebrow">Assistant central</span><h2>Parler à WebStorming</h2><p>Parle ou écris. À l’arrêt, le texte est traité automatiquement.</p></div></div>
-  <div class="voice-main">
-    <button id="voiceGlobal" class="voice-button" type="button" aria-pressed="false">
-      <span class="mic-icon">🎙</span>
-      <span id="voiceButtonLabel">Parler à WebStorming</span>
-    </button>
-    <div class="voice-state">
-      <strong id="voiceState">Micro en attente</strong>
-      <span id="voiceTranscript">La transcription apparaîtra ici.</span>
+  <noscript>
+    <div class="ws-noscript">
+      <h1>JavaScript est désactivé</h1>
+      <p>WebStorming OS a besoin de JavaScript pour démarrer.</p>
     </div>
-  </div>
-  <div class="voice-actions">
-    <select id="voiceTarget" aria-label="Destination de la dictée">
-      <option value="auto">Détection automatique</option>
-      <option value="quickIdea">Nouvelle idée</option>
-      <option value="ideaText">Atelier des idées</option>
-      <option value="q">Recherche globale</option>
-      <option value="projectNoteText">Note du projet ouvert</option>
-    </select>
-    <label class="auto-toggle"><input id="voiceAutoSubmit" type="checkbox" checked><span>Envoyer automatiquement à l’arrêt</span></label>
-<button id="voiceInsert" class="primary compact" type="button" disabled>Insérer</button>
-<button id="voiceSaveIdea" class="link-btn" type="button" disabled>Idée</button>
-<button id="voiceExecute" class="link-btn" type="button" disabled>Commande</button>
-<button id="voiceCancel" class="link-btn" type="button" disabled>Annuler</button>
-  </div>
-  <p id="voiceHelp" class="voice-help">
-    Parle aussi longtemps que nécessaire, puis clique sur « Arrêter l’écoute ». Ensuite choisis : insérer, enregistrer comme idée ou exécuter comme commande.
-  </p>
-</section>
+  </noscript>
 
+  <main id="ws-root" class="ws-root" aria-live="polite">
+    <section id="ws-loader" class="ws-loader">
+      <div class="ws-pulse" aria-hidden="true"></div>
+      <h1>Initialisation de WebStorming OS v1.1.4...</h1>
+      <p id="ws-loader-status">Chargement du moteur PWA sécurisé.</p>
+      <div class="ws-progress" aria-hidden="true"><span></span></div>
+    </section>
+  </main>
 
-<section id="dashboard" class="view active">
-  <section class="hero">
-    <div><div class="hero-label">Bonjour Bernard</div><h2>Ta centrale de production est prête.</h2><p id="loadMessage"></p></div>
-    <div class="hero-actions">
-      <div class="hero-status"><span class="pulse"></span><span id="sourceBadge"></span></div>
-      <button class="primary compact" data-view-jump="work">Commencer ma journée</button>
+  <section id="ws-boot-panel" class="ws-boot-panel" hidden>
+    <div class="ws-boot-card">
+      <h2>Diagnostic de démarrage</h2>
+      <p id="ws-boot-summary">Le démarrage prend trop longtemps.</p>
+      <pre id="ws-boot-log"></pre>
+      <div class="ws-actions">
+        <button type="button" id="ws-retry">Réessayer</button>
+        <button type="button" id="ws-clear-cache">Vider cache PWA</button>
+        <a href="./diagnose.html">Diagnostic complet</a>
+      </div>
     </div>
   </section>
-  <section class="stats">
-    <div class="stat"><span>Projets</span><b id="count">0</b><small>suivis</small></div>
-    <div class="stat"><span>Focus du jour</span><b id="focusCount">0</b><small>sélectionnés</small></div>
-    <div class="stat"><span>Dépendances</span><b id="dependencyCount">0</b><small>relations</small></div>
-    <div class="stat"><span>Avancement moyen</span><b id="avg">0%</b><small>global</small></div>
-  </section>
-  <section class="dashboard-grid">
-    <article class="panel wide"><div class="panel-head"><div><span class="eyebrow">Priorités</span><h3>À garder en tête</h3></div></div><div id="priorityList" class="priority-list"></div></article>
-    <article class="panel"><div class="panel-head"><div><span class="eyebrow">Mémoire</span><h3>Dernières idées capturées</h3></div><button class="link-btn" data-view-jump="ideas">Tout voir</button></div><div id="recentIdeas" class="idea-list compact-list"></div></article>
-    <article class="panel"><span class="eyebrow">Prochaine action</span><h3>Suggestion du cockpit</h3><div id="nextAction" class="next-action"></div></article>
-    <article class="panel wide"><span class="eyebrow">Cartographie</span><h3>Répartition des projets</h3><div id="categoryBars" class="bars"></div></article>
-  </section>
-</section>
-
-<section id="work" class="view">
-  <div class="section-title"><div><span class="eyebrow">Focus</span><h2>Mode travail</h2><p class="muted">Seulement les projets à traiter aujourd’hui.</p></div></div>
-  <div id="workGrid" class="work-grid"></div>
-</section>
-
-<section id="projects" class="view">
-  <div class="section-title"><div><span class="eyebrow">Catalogue</span><h2>Tous les projets</h2></div></div>
-  <div class="toolbar">
-    <div class="voice-search"><input id="q" class="search" placeholder="Recherche globale…"><button class="field-mic" type="button" data-voice-target="q" title="Recherche vocale">🎙</button></div>
-    <select id="cat" class="select"><option value="">Toutes catégories</option></select>
-    <select id="status" class="select"><option value="">Tous statuts</option></select>
-  </div>
-  <section id="cards" class="grid"></section>
-</section>
-
-<section id="ideas" class="view">
-  <div class="section-title"><div><span class="eyebrow">Mémoire vivante</span><h2>Atelier des idées</h2></div></div>
-  <section class="ideas-layout">
-    <article class="panel"><label>Idée</label><div class="voice-field"><textarea id="ideaText" placeholder="Écris ou dicte une idée…"></textarea><button class="field-mic" type="button" data-voice-target="ideaText" title="Dicter une idée">🎙</button></div><label>Projet</label><select id="ideaProject"><option value="Général">Général</option></select><label>Priorité</label><select id="ideaPriority"><option>Normale</option><option>Haute</option><option>Critique</option></select><button id="saveIdea" class="primary">Ajouter</button></article>
-    <article class="panel"><div class="panel-head"><div><span class="eyebrow">Archives</span><h3>Idées enregistrées</h3></div><div class="button-row"><button id="exportIdeas" class="link-btn">Exporter</button><button id="clearIdeas" class="danger-btn">Vider</button></div></div><div id="ideaList" class="idea-list"></div></article>
-  </section>
-</section>
-
-<section id="map" class="view">
-  <div class="section-title"><div><span class="eyebrow">Architecture</span><h2>Dépendances entre projets</h2></div></div>
-  <section class="panel"><div id="dependencyMap" class="dependency-map"></div></section>
-</section>
-
-<section id="roadmap" class="view">
-  <div class="section-title"><div><span class="eyebrow">Pilotage</span><h2>Roadmap globale</h2></div></div>
-  <div class="roadmap-board"><section><h3>Maintenant</h3><div id="roadNow" class="road-col"></div></section><section><h3>Ensuite</h3><div id="roadNext" class="road-col"></div></section><section><h3>Plus tard</h3><div id="roadLater" class="road-col"></div></section></div>
-</section>
-
-<section id="diagnostics" class="view">
-  <div class="section-title"><div><span class="eyebrow">Résilience</span><h2>Diagnostic système</h2></div></div>
-  <article class="panel"><div id="diagList" class="diag-list"></div><button id="reloadData" class="primary">Recharger</button></article>
-</section>
-
-<dialog id="projectDialog">
-  <button class="dialog-close">×</button>
-  <div id="dialogContent"></div>
-</dialog>
-
-</main>
-<script src="assets/projects-fallback.js"></script>
-<script src="assets/app.js"></script>
 </body>
 </html>

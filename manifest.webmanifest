@@ -1,0 +1,18 @@
+{
+  "name": "WebStorming OS",
+  "short_name": "WebStorming",
+  "description": "WebStorming OS V1.1.4 Boot Fix",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#160f0e",
+  "theme_color": "#151010",
+  "icons": [
+    {
+      "src": "./assets/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Diagnostic — WebStorming OS V1.1.4</title>
+  <link rel="stylesheet" href="./assets/css/app.css" />
+</head>
+<body>
+  <main class="ws-root">
+    <section class="ws-app">
+      <header class="ws-hero">
+        <div>
+          <div class="ws-kicker">Diagnostic</div>
+          <h1>WebStorming OS V1.1.4</h1>
+          <p>Contrôle des chemins, assets, manifest, service worker et cache PWA.</p>
+        </div>
+        <div class="ws-badge" id="global-status">EN COURS</div>
+      </header>
+      <div class="ws-grid" id="diagnostic-grid"></div>
+      <div class="ws-actions">
+        <a href="./index.html">Retour app</a>
+        <button id="clear-cache">Vider cache + service workers</button>
+      </div>
+    </section>
+  </main>
+  <script>
+    const assets = ['./index.html','./assets/css/app.css','./assets/js/boot-guard.js','./assets/js/app.js','./manifest.webmanifest','./sw.js'];
+    const grid = document.getElementById('diagnostic-grid');
+    const status = document.getElementById('global-status');
+    function esc(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+    function add(title, text){ const el=document.createElement('article'); el.className='ws-card'; el.innerHTML='<h3>'+esc(title)+'</h3><p>'+esc(text)+'</p>'; grid.appendChild(el); return el; }
+    async function run(){
+      let ok = true;
+      add('URL', location.href);
+      add('Path', location.pathname);
+      for (const asset of assets) {
+        try {
+          const res = await fetch(asset + '?diag=' + Date.now(), { cache: 'no-store' });
+          if (!res.ok) ok = false;
+          add(asset, 'HTTP ' + res.status + ' — ' + (res.ok ? 'OK' : 'ERREUR'));
+        } catch (err) {
+          ok = false; add(asset, 'FETCH FAILED — ' + (err.message || err));
+        }
+      }
+      if ('serviceWorker' in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        add('Service workers', regs.length + ' registration(s) active(s)');
+      } else add('Service workers', 'non supportés');
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        add('Caches', keys.length ? keys.join(', ') : 'aucun cache');
+      } else add('Caches', 'non supportés');
+      status.textContent = ok ? 'OK' : 'À CORRIGER';
+      if (!ok) status.style.color = '#ff6b6b';
+    }
+    document.getElementById('clear-cache').addEventListener('click', async () => {
+      if ('serviceWorker' in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(r => r.unregister()));
+      }
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(k => caches.delete(k)));
+      }
+      location.reload();
+    });
+    run();
+  </script>
+</body>
+</html>

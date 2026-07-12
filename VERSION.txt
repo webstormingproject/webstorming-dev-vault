@@ -1,0 +1,4 @@
+WebStorming OS V1.1.4 — Boot Fix
+Build: 2026-07-12
+Type: GitHub Pages / PWA boot hotfix
+Target path: /webstorming-dev-vault/
